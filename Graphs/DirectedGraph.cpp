@@ -1,5 +1,17 @@
 #include "DirectedGraph.hpp"
 
+//---------------------------------------------------------------------------------------------------------------------
+
+DirectedGraph::DirectedGraph(unsigned int numNodes)
+{
+    for (unsigned int i = 0; i < numNodes; i++)
+    {
+        addNode(i);
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void DirectedGraph::addNode(nodeId node)
 {
     if (nodes.find(node) != nodes.end())
@@ -15,9 +27,9 @@ void DirectedGraph::addNode(nodeId node)
 
 void DirectedGraph::removeNode(nodeId node)
 {
-    if (nodes.find(node) != nodes.end())
+    if (nodes.find(node) == nodes.end())
     {
-        std::__throw_invalid_argument("Trying to insert node which already exists.");
+        std::__throw_invalid_argument("Trying to remove node which does not exist.");
     }
 
     nodes.erase(node);

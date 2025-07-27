@@ -2,15 +2,8 @@
 
 int main(int argc, char * argv[])
 {
-    auto graph = DirectedGraph();
-
-    // Make a crown
-    graph.addNode(1);
-    graph.addNode(2);
-    graph.addNode(3);
-    graph.addNode(4);
-    graph.addNode(5);
-    graph.addNode(6);
+    auto graph = DirectedGraph(7);
+    graph.removeNode(0);
 
     // 1 -> 4, 5
     graph.addEdge(1, 4);

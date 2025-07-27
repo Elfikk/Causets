@@ -8,6 +8,7 @@ class DirectedGraph
 {
 public:
     DirectedGraph() {}
+    DirectedGraph(unsigned int numNodes);
 
     void addNode(nodeId node);
     void removeNode(nodeId node);
