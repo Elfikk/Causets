@@ -12,3 +12,9 @@ test: $(OBJS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -rf $(TARGET) $(OBJS)
+
+run:
+	./main
