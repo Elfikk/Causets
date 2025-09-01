@@ -32,6 +32,8 @@ public:
     void buildCylinderRegion(int axis, Event<d> cylinderCentre, double cylinderLength, double cylinderRadius);
     void buildRectangularRegion(std::array<double, 2*d> inputBounds);
 
+    void buildRectangularEnclosure(std::array<double, 2*d> inputBounds);
+
 private:
     Sprinkler<d> sprinkler;
 };
@@ -65,3 +67,20 @@ void SprinklerBuilder<d>::buildCausalRegion(const Event<d> & bottom, const Event
     sprinkler.setRegion(std::move(causalRegion));
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+void SprinklerBuilder<d>::buildRectangularRegion(std::array<double, 2*d> inputBounds)
+{
+    auto rectangularRegion = std::make_unique<RectangularRegion<d>>(inputBounds);
+    sprinkler.setRegion(std::move(rectangularRegion));
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+void SprinklerBuilder<d>::buildRectangularEnclosure(std::array<double, 2*d> inputBounds)
+{
+    auto rectangularRegion = std::make_unique<RectangularRegion<d>>(inputBounds);
+    sprinkler.setEnclosingRegion(std::move(rectangularRegion));
+}
