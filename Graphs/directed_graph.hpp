@@ -20,6 +20,8 @@ public:
 
     std::size_t getNumNodes() { return nodes.size(); }
 
+    std::map<nodeId, std::set<nodeId>> getAdjacencyList() const { return adjacencyList; }
+
 private:
     std::set<nodeId> nodes;
     std::map<nodeId, std::set<nodeId>> adjacencyList;
