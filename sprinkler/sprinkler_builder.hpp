@@ -34,6 +34,8 @@ public:
 
     void buildRectangularEnclosure(std::array<double, 2*d> inputBounds);
 
+    Sprinkler<d> getSprinkler() { return sprinkler; }
+
 private:
     Sprinkler<d> sprinkler;
 };

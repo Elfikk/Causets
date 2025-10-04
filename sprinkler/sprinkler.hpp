@@ -5,6 +5,9 @@
 
 #include "spacetimes/spacetime.hpp"
 
+#include "sprinkler/sprinkle.hpp"
+#include "sprinkler/sprinkle_strategies.hpp"
+
 #include <memory>
 
 template<int d>
@@ -17,10 +20,11 @@ class Sprinkler
 {
 public:
     Sprinkler() {}
+    Sprinkler(Sprinkler<d> &); // How does this deal with unique pointers? TL;DR it didn't
 
-    bool canSprinkle() { return !spacetime && !region && !enclosingRegion; }
+    bool canSprinkle() { return spacetime && region && enclosingRegion; }
 
-    std::unique_ptr<Sprinkle<d>> sprinkle(int points);
+    Sprinkle<d> sprinkle(int points);
 
     Spacetime<d> * getSpacetime() { return spacetime.get(); }
 
@@ -51,4 +55,35 @@ void Sprinkler<d>::setRegion(std::unique_ptr<Region<d>> newRegion)
 {
     region = std::move(newRegion);
     enclosingRegion = nullptr;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+Sprinkler<d>::Sprinkler(Sprinkler<d> & other)
+{
+    setSpacetime(std::move(other.spacetime));
+    setRegion(std::move(other.region));
+    setEnclosingRegion(std::move(other.enclosingRegion));
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+Sprinkle<d> Sprinkler<d>::sprinkle(int points)
+{
+    Sprinkle<d> sprinkle;
+    int generatedPoints = 0;
+
+    while (generatedPoints < points)
+    {
+        auto potentialPoint = SprinkleStrategy::minkowskiRegionSprinkleEvent(*region, *enclosingRegion);
+        if (!potentialPoint)
+        {
+            generatedPoints++;
+            sprinkle.addEvent(*potentialPoint);
+        }
+    }
+
+    return sprinkle;
 }

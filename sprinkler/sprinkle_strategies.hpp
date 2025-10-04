@@ -37,11 +37,11 @@ namespace SprinkleStrategy
     template<int d>
     std::optional<Event<d>> minkowskiRegionSprinkleEvent(Region<d> & sprinkleRegion, RectangularRegion<d> & enclosingRegion)
     {
-        const auto randomNums = generateRandomNumbers<d>();
+        const auto randomNums = SprinkleUtils::generateRandomNumbers<d>();
         std::array<double, d> coords;
         for (int i = 0; i < d; i++)
         {
-            coords[i] = linear_interpolate(
+            coords[i] = SprinkleUtils::linearInterpolate(
                 randomNums[i],
                 enclosingRegion.getLowerBound(i),
                 enclosingRegion.getUpperBound(i)
@@ -49,7 +49,7 @@ namespace SprinkleStrategy
         }
 
         Event<d> event(coords);
-        return sprinkleRegion.isInside(event) ? event : std::nullopt;
+        return sprinkleRegion.isInside(event) ? std::optional(event) : std::nullopt;
     };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -62,16 +62,16 @@ namespace SprinkleStrategy
         std::array<double, d> coords;
         for (int i = 0; i < d; i++)
         {
-            coords[i] = linear_interpolate(
+            coords[i] = SprinkleUtils::linearInterpolate(
                 randomNums[i],
                 enclosingRegion.getLowerBound(i),
                 enclosingRegion.getUpperBound(i)
             );
         }
         const auto R0 = sprinkleRegion.getR0();
-        coords[1] = R0 / (1 - x)**(1 / d-1);
+        coords[1] = R0 / pow(1 - randomNums[1], 1 / d-1);
 
         Event<d> event(coords);
-        return sprinkleRegion.isInside(event) ? event : std::nullopt;
+        return sprinkleRegion.isInside(event) ? std::optional(event) : std::nullopt;
     };
 };

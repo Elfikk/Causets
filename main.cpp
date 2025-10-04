@@ -8,6 +8,8 @@
 
 #include "utils/causal_functions.hpp"
 
+#include <iostream>
+
 int main(int argc, char * argv[])
 {
     // auto graph = DirectedGraph(7);
@@ -35,4 +37,21 @@ int main(int argc, char * argv[])
 
     builder.buildCausalRegion(bottom, top);
 
+    std::array<double, 4> bounds({-1, 1, -1, 1});
+
+    builder.buildRectangularEnclosure(bounds);
+
+    auto sprinkler = builder.getSprinkler();
+
+    if (sprinkler.canSprinkle())
+    {
+        auto sprinkle = sprinkler.sprinkle(10);
+        auto graph = sprinkle.generateCausalSet(sprinkler.getSpacetime());
+
+        std::cout << "\nAnything?";
+    }
+
+    std::cout << "\nNo?";
+
+    return 0;
 }
