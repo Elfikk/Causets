@@ -19,7 +19,7 @@ std::function<bool(Event<d>&)> isInCausalRegion(SpacetimeT * spacetime, Event<d>
     {
         const auto bottomRelation = spacetime->causalRelation(bottom, event);
         const auto topRelation = spacetime->causalRelation(event, top);
-        return ((bottomRelation == CausalRelation::CausalFuture) && (topRelation == CausalRelation::CausalPast));
+        return ((bottomRelation == CausalRelation::CausalFuture) && (topRelation == CausalRelation::CausalFuture));
     };
     return causalFunction;
 }
