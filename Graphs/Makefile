@@ -10,4 +10,4 @@ directed_graph.o: directed_graph.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $(MAKEDIR)/$(BUILDDIR)/graphs/directed_graph.o
 
 clean:
-	rm -rf $(BUILDDIR)/$(GRAPH_TARGET) $(BUILDDIR)/graphs/$(GRAPH_OBJS)
+	rm -rf $(BUILDDIR)/graphs/$(GRAPH_OBJS)
