@@ -18,6 +18,8 @@ public:
     void addEdge(nodeId from, nodeId to);
     void removeEdge(nodeId from, nodeId to);
 
+    std::size_t getNumNodes() { return nodes.size(); }
+
 private:
     std::set<nodeId> nodes;
     std::map<nodeId, std::set<nodeId>> adjacencyList;
