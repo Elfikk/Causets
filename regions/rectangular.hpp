@@ -11,7 +11,7 @@ class RectangularRegion : public Region<d>
 {
 public:
     RectangularRegion(std::array<double, 2*d> inputBounds) : bounds(inputBounds) {}
-    bool isInside(Event<d> &) override;
+    bool isInside(const Event<d> &) const override;
     double getLowerBound(int coordinate) { return bounds[2 * coordinate]; };
     double getUpperBound(int coordinate) { return bounds[2 * coordinate + 1]; };
 
@@ -22,7 +22,7 @@ private:
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-bool RectangularRegion<d>::isInside(Event<d> & event)
+bool RectangularRegion<d>::isInside(const Event<d> & event) const
 {
     for (int i = 0; i < d; i++)
     {

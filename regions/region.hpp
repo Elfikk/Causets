@@ -8,5 +8,5 @@ template<int d>
 class Region
 {
 public:
-    virtual bool isInside(Event<d> &) = 0;
+    virtual bool isInside(const Event<d> &) const = 0;
 };

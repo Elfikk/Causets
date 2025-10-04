@@ -18,7 +18,7 @@ public:
         double cylinderLength,
         double cylinderRadius
     );
-    bool isInside(Event<d> &) override;
+    bool isInside(const Event<d> &) const override;
 
 private:
     int axisCoordinate;
@@ -48,7 +48,7 @@ radius(cylinderRadius)
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-bool CylindricalRegion<d>::isInside(Event<d> & event)
+bool CylindricalRegion<d>::isInside(const Event<d> & event) const
 {
     // Check within length of cylinder
     auto axisCoordValue = event[axisCoordinate];

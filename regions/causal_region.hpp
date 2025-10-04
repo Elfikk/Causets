@@ -19,24 +19,24 @@ template<int d>
 class CausalRegion: public Region<d>
 {
 public:
-    CausalRegion(std::function<bool(Event<d> &)> func) : causalFunction(func) {}
+    CausalRegion(std::function<bool(const Event<d> &)> func) : causalFunction(func) {}
     ~CausalRegion() {};
 
     // I want to be able to switch the strategy of this check, depending on the
     // spacetime
-    bool isInside(Event<d> &) override;
+    bool isInside(const Event<d> &) const override;
 
 private:
     // Default function should check causal relation with top and bottom events
     // of the causal region; if more clever way exists then great i.e from the
     // geometrical cone definition.
-    std::function<bool(Event<d> &)> causalFunction;
+    std::function<bool(const Event<d> &)> causalFunction;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-bool CausalRegion<d>::isInside(Event<d> & event)
+bool CausalRegion<d>::isInside(const Event<d> & event) const
 {
     return causalFunction(event);
 }
