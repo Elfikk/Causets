@@ -15,6 +15,8 @@ public:
     // Do I want the entire class templated on the Spacetime?
     DirectedGraph generateCausalSet(Spacetime<d> * spacetime);
 
+    std::vector<Event<d>> getEvents() { return events; }
+
 private:
     std::vector<Event<d>> events;
 };
