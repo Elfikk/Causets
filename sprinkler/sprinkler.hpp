@@ -70,7 +70,7 @@ Sprinkler<d>::Sprinkler(Sprinkler<d> & other)
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-Sprinkle<d> Sprinkler<d>::sprinkle(int points)
+Sprinkle<d> Sprinkler<d>::sprinkle(const int points)
 {
     Sprinkle<d> sprinkle;
     int generatedPoints = 0;
@@ -78,7 +78,7 @@ Sprinkle<d> Sprinkler<d>::sprinkle(int points)
     while (generatedPoints < points)
     {
         auto potentialPoint = SprinkleStrategy::minkowskiRegionSprinkleEvent(*region, *enclosingRegion);
-        if (!potentialPoint)
+        if (potentialPoint.has_value())
         {
             generatedPoints++;
             sprinkle.addEvent(*potentialPoint);
