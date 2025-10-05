@@ -21,6 +21,8 @@ private:
     std::vector<Event<d>> events;
 };
 
+//---------------------------------------------------------------------------------------------------------------------
+
 template<int d>
 DirectedGraph Sprinkle<d>::generateCausalSet(Spacetime<d> * spacetime)
 {

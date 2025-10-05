@@ -38,6 +38,4 @@ void dumpSprinkleCsv(Sprinkle<d> & sprinkle, const std::string filename)
     dumpFile.close();
 }
 
-
 }
-
