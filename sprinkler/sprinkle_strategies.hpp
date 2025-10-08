@@ -2,6 +2,10 @@
 
 #include "event.hpp"
 
+#include "spacetimes/ads.hpp"
+#include "spacetimes/minkowski.hpp"
+#include "spacetimes/spacetime.hpp"
+
 #include <array>
 #include <optional>
 #include <random>
@@ -34,8 +38,11 @@ namespace SprinkleUtils
 
 namespace SprinkleStrategy
 {
-    template<int d>
-    std::optional<Event<d>> minkowskiRegionSprinkleEvent(Region<d> & sprinkleRegion, RectangularRegion<d> & enclosingRegion)
+
+//---------------------------------------------------------------------------------------------------------------------
+
+    template<int d, typename RegionT>
+    std::optional<Event<d>> doSprinkleEvent(RegionT & sprinkleRegion, RectangularRegion<d> & enclosingRegion, minkowski_spacetime)
     {
         const auto randomNums = SprinkleUtils::generateRandomNumbers<d>();
         std::array<double, d> coords;
@@ -54,8 +61,8 @@ namespace SprinkleStrategy
 
 //---------------------------------------------------------------------------------------------------------------------
 
-    template<int d>
-    std::optional<Event<d>> adsRegionSprinkleEvent(Region<d> & sprinkleRegion, RectangularRegion<d> & enclosingRegion)
+    template<int d, typename RegionT>
+    std::optional<Event<d>> doSprinkleEvent(RegionT & sprinkleRegion, RectangularRegion<d> & enclosingRegion, ads_spacetime)
     {
         const auto randomNums = SprinkleUtils::generateRandomNumbers<d>();
         // Now map random numbers to coordinates within enclosing region
@@ -83,4 +90,13 @@ namespace SprinkleStrategy
         Event<d> event(coords);
         return sprinkleRegion.isInside(event) ? std::optional(event) : std::nullopt;
     };
+
+//---------------------------------------------------------------------------------------------------------------------
+
+    template<int d, typename SpacetimeT, typename RegionT>
+    std::optional<Event<d>> sprinkleEvent(RegionT sprinkleRegion, RectangularRegion<d> & enclosingRegion)
+    {
+        return doSprinkleEvent(sprinkleRegion, enclosingRegion, typename spacetime_traits<SpacetimeT>::spacetime_class());
+    }
+
 };

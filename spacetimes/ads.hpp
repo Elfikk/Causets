@@ -4,11 +4,17 @@
 
 #include <limits>
 
+//---------------------------------------------------------------------------------------------------------------------
+
+struct ads_spacetime: public generic_spacetime {};
+
+//---------------------------------------------------------------------------------------------------------------------
+
 template<int d>
 class AdS: public Spacetime<d>
 {
 public:
-    typedef AdS<d> spacetime_class;
+    typedef ads_spacetime spacetime_class;
 
     AdS(double lowerR) : R0(lowerR) {}
     CausalRelation causalRelation(const Event<d> & a, const Event<d> & b) const override;
@@ -23,6 +29,14 @@ private:
     // array for the local metric
 
     double R0 = 0.1;
+};
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+struct spacetime_traits<AdS<d>>
+{
+    typedef typename AdS<d>::spacetime_class spacetime_class;
 };
 
 //---------------------------------------------------------------------------------------------------------------------

@@ -8,76 +8,45 @@
 #include "sprinkler/sprinkle.hpp"
 #include "sprinkler/sprinkle_strategies.hpp"
 
+#include <optional>
 #include <memory>
 
-template<int d>
+template<int d, typename SpacetimeT>
 class Sprinkle;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-template<int d>
+template<int d, typename SpacetimeT, typename RegionT>
 class Sprinkler
 {
 public:
     Sprinkler() {}
-    Sprinkler(Sprinkler<d> &); // How does this deal with unique pointers? TL;DR it didn't
 
-    bool canSprinkle() { return spacetime && region && enclosingRegion; }
+    bool canSprinkle() { return spacetime.has_value() && region.has_value() && enclosingRegion.has_value(); }
 
-    Sprinkle<d> sprinkle(int points);
+    Sprinkle<d, SpacetimeT> sprinkle(int points);
 
-    Spacetime<d> * getSpacetime() { return spacetime.get(); }
-
-    void setSpacetime(std::unique_ptr<Spacetime<d>> spacetime);
-    void setRegion(std::unique_ptr<Region<d>> region);
-    void setEnclosingRegion(std::unique_ptr<RectangularRegion<d>> newRegion) { enclosingRegion = std::move(newRegion); }
+    void setSpacetime(SpacetimeT newSpacetime) { spacetime = newSpacetime; };
+    void setRegion(RegionT newRegion) { region = newRegion; }
+    void setEnclosingRegion(RectangularRegion<d> newRegion) { enclosingRegion = newRegion; }
 
 private:
-    std::unique_ptr<Spacetime<d>> spacetime = nullptr;
-    std::unique_ptr<Region<d>> region = nullptr;
-    std::unique_ptr<RectangularRegion<d>> enclosingRegion = nullptr;
+    std::optional<SpacetimeT> spacetime = std::nullopt;
+    std::optional<RegionT> region = std::nullopt;
+    std::optional<RectangularRegion<d>> enclosingRegion = std::nullopt;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
 
-template<int d>
-void Sprinkler<d>::setSpacetime(std::unique_ptr<Spacetime<d>> newSpacetime)
+template<int d, typename SpacetimeT, typename RegionT>
+Sprinkle<d, SpacetimeT> Sprinkler<d, SpacetimeT, RegionT>::sprinkle(const int points)
 {
-    spacetime = std::move(newSpacetime);
-    region = nullptr;
-    enclosingRegion = nullptr;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-template<int d>
-void Sprinkler<d>::setRegion(std::unique_ptr<Region<d>> newRegion)
-{
-    region = std::move(newRegion);
-    enclosingRegion = nullptr;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-template<int d>
-Sprinkler<d>::Sprinkler(Sprinkler<d> & other)
-{
-    setSpacetime(std::move(other.spacetime));
-    setRegion(std::move(other.region));
-    setEnclosingRegion(std::move(other.enclosingRegion));
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-template<int d>
-Sprinkle<d> Sprinkler<d>::sprinkle(const int points)
-{
-    Sprinkle<d> sprinkle;
+    Sprinkle<d, SpacetimeT> sprinkle(spacetime.value());
     int generatedPoints = 0;
 
     while (generatedPoints < points)
     {
-        auto potentialPoint = SprinkleStrategy::minkowskiRegionSprinkleEvent(*region, *enclosingRegion);
+        auto potentialPoint = SprinkleStrategy::sprinkleEvent<d, SpacetimeT>(region.value(), enclosingRegion.value());
         if (potentialPoint.has_value())
         {
             generatedPoints++;

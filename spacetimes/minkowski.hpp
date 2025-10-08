@@ -4,7 +4,12 @@
 
 #include "event.hpp"
 
+#include <iterator>
 #include <limits>
+
+//---------------------------------------------------------------------------------------------------------------------
+
+struct minkowski_spacetime: public generic_spacetime {};
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -12,7 +17,7 @@ template<int d>
 class Minkowski: public Spacetime<d>
 {
 public:
-    typedef Minkowski<d> spacetime_class;
+    typedef minkowski_spacetime spacetime_class;
 
     Minkowski();
     Minkowski(std::array<double, 2 * d> boundaries);
@@ -22,9 +27,17 @@ public:
     double getUpperBound(int i) const { return bounds[2 * i + 1]; }
 
 private:
-    double interval(Event<d> & a, Event<d> & b);
+    double interval(const Event<d> & a, const Event<d> & b) const;
     std::array<double, d> metric;
     std::array<double, 2 * d> bounds;
+};
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+struct spacetime_traits<Minkowski<d>>
+{
+    typedef typename Minkowski<d>::spacetime_class spacetime_class;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -63,19 +76,27 @@ Minkowski<d>::Minkowski(std::array<double, 2 * d> boundaries) : bounds(boundarie
 template<int d>
 CausalRelation Minkowski<d>::causalRelation(const Event<d> & a, const Event<d> & b) const
 {
-    double interval = 0;
-    for (int i = 0; i < d; i++)
-    {
-        interval += metric[i] * (b[i] - a[i]) * (b[i] - a[i]);
-    }
-
-    if (interval > 0)
+    const auto separation = interval(a, b);
+    if (separation > 0)
     {
         return CausalRelation::Spacelike;
     }
-    else if (interval == 0)
+    else if (separation == 0)
     {
         return CausalRelation::TimeLike;
     }
     return a[0] < b[0] ? CausalRelation::CausalFuture : CausalRelation::CausalPast;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+double Minkowski<d>::interval(const Event<d> & a, const Event<d> & b) const
+{
+    double separation = 0;
+    for (int i = 0; i < d; i++)
+    {
+        separation += metric[i] * (b[i] - a[i]) * (b[i] - a[i]);
+    }
+    return separation;
 }

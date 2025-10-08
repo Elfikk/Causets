@@ -15,6 +15,9 @@ enum class CausalRelation
 
 //---------------------------------------------------------------------------------------------------------------------
 
+struct spacetime_class {};
+
+struct generic_spacetime: public spacetime_class {};
 template<typename SpacetimeT>
 struct spacetime_traits
 {
@@ -28,10 +31,18 @@ template<int d>
 class Spacetime
 {
 public:
-    typedef Spacetime<d> spacetime_class;
+    typedef generic_spacetime spacetime_class;
 
     virtual ~Spacetime() {}
     virtual CausalRelation causalRelation(const Event<d> & a, const Event<d> & b) const = 0;
     virtual double getLowerBound(int i) const = 0;
     virtual double getUpperBound(int i) const = 0;
+};
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+struct spacetime_traits<Spacetime<d>>
+{
+    typedef typename Spacetime<d>::spacetime_class spacetime_class;
 };

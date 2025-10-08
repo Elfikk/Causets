@@ -14,6 +14,7 @@
 #include "utils/causal_functions.hpp"
 
 #include <functional>
+#include <optional>
 #include <memory>
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -24,65 +25,95 @@ class SprinklerBuilder
 public:
     SprinklerBuilder() {}
 
-    void buildMinkowski();
-    void buildAds(double R0);
+    Minkowski<d> buildMinkowski();
+    AdS<d> buildAds(double R0);
     // void buildKoluzaKlein(std::array<double, 2*d> bounds);
 
-    void buildCausalRegion(const Event<d> &, const Event<d> &);
-    void buildCylinderRegion(int axis, Event<d> cylinderCentre, double cylinderLength, double cylinderRadius);
-    void buildRectangularRegion(std::array<double, 2*d> inputBounds);
+    CausalRegion<d> buildCausalRegion(const Event<d> &, const Event<d> &);
+    // void buildCylinderRegion(int axis, Event<d> cylinderCentre, double cylinderLength, double cylinderRadius);
+    RectangularRegion<d> buildRectangularRegion(std::array<double, 2*d> inputBounds);
 
-    void buildRectangularEnclosure(std::array<double, 2*d> inputBounds);
+    RectangularRegion<d> buildRectangularEnclosure(std::array<double, 2*d> inputBounds);
 
-    Sprinkler<d> getSprinkler() { return sprinkler; }
+    template<typename SpacetimeT, typename RegionT>
+    Sprinkler<d, SpacetimeT, RegionT> getSprinkler(SpacetimeT spacetime, RegionT region, RectangularRegion<d> enclosure)
+    {
+        return buildSprinkler(spacetime, region, enclosure);
+    }
 
 private:
-    Sprinkler<d> sprinkler;
+    template<typename SpacetimeT, typename RegionT>
+    Sprinkler<d, SpacetimeT, RegionT> buildSprinkler(SpacetimeT, RegionT, RectangularRegion<d>);
+
+    std::optional<Minkowski<d>> minkowski = std::nullopt;
+    std::optional<AdS<d>> ads = std::nullopt;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-void SprinklerBuilder<d>::buildMinkowski()
+template<typename SpacetimeT, typename RegionT>
+Sprinkler<d, SpacetimeT, RegionT> SprinklerBuilder<d>::buildSprinkler(SpacetimeT spacetime, RegionT region, RectangularRegion<d> enclosure)
 {
-    auto minkowski = std::make_unique<Minkowski<d>>();
-    sprinkler.setSpacetime(std::move(minkowski));
+    Sprinkler<d, SpacetimeT, RegionT> sprinkler;
+    sprinkler.setSpacetime(spacetime);
+    sprinkler.setRegion(region);
+    sprinkler.setEnclosingRegion(enclosure);
+    return sprinkler;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-void SprinklerBuilder<d>::buildAds(double R0)
+Minkowski<d> SprinklerBuilder<d>::buildMinkowski()
 {
-    auto ads = std::make_unique<AdS<d>>(R0);
-    sprinkler.setSpacetime(std::move(ads));
+    ads = std::nullopt;
+    minkowski = Minkowski<d>();
+    return minkowski.value();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-void SprinklerBuilder<d>::buildCausalRegion(const Event<d> & bottom, const Event<d> & top)
+AdS<d> SprinklerBuilder<d>::buildAds(double R0)
 {
-    auto spacetime = sprinkler.getSpacetime();
-    auto causalFunc = CausalUtils::isInCausalRegion<d>(spacetime, bottom, top);
-    auto causalRegion = std::make_unique<CausalRegion<d>>(causalFunc);
-    sprinkler.setRegion(std::move(causalRegion));
+    minkowski = std::nullopt;
+    ads = AdS<d>(R0);
+    return ads.value();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-void SprinklerBuilder<d>::buildRectangularRegion(std::array<double, 2*d> inputBounds)
+CausalRegion<d> SprinklerBuilder<d>::buildCausalRegion(const Event<d> & bottom, const Event<d> & top)
 {
-    auto rectangularRegion = std::make_unique<RectangularRegion<d>>(inputBounds);
-    sprinkler.setRegion(std::move(rectangularRegion));
+    if (minkowski.has_value())
+    {
+        auto causalFunc = CausalUtils::isInCausalRegion<d>(minkowski.value(), bottom, top);
+        auto causalRegion = CausalRegion<d>(causalFunc);
+        return causalRegion;
+    }
+    else if (ads.has_value())
+    {
+        auto causalFunc = CausalUtils::isInCausalRegion<d>(ads.value(), bottom, top);
+        auto causalRegion = CausalRegion<d>(causalFunc);
+        return causalRegion;
+    }
+    // Throw an exception for trying to build the region without defining the spacetime.
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-void SprinklerBuilder<d>::buildRectangularEnclosure(std::array<double, 2*d> inputBounds)
+RectangularRegion<d> SprinklerBuilder<d>::buildRectangularRegion(std::array<double, 2*d> inputBounds)
 {
-    auto rectangularRegion = std::make_unique<RectangularRegion<d>>(inputBounds);
-    sprinkler.setEnclosingRegion(std::move(rectangularRegion));
+    return RectangularRegion<d>(inputBounds);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+RectangularRegion<d> SprinklerBuilder<d>::buildRectangularEnclosure(std::array<double, 2*d> inputBounds)
+{
+    return RectangularRegion<d>(inputBounds);
 }
