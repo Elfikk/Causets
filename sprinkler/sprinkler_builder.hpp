@@ -7,6 +7,7 @@
 #include "regions/causal_region.hpp"
 #include "regions/cylindrical.hpp"
 #include "regions/rectangular.hpp"
+#include "regions/spherical.hpp"
 
 #include "spacetimes/ads.hpp"
 #include "spacetimes/minkowski.hpp"
@@ -36,6 +37,7 @@ public:
         double cylinderLength,
         double cylinderRadius);
     RectangularRegion<d> buildRectangularRegion(std::array<double, 2*d> inputBounds);
+    SphericalRegion<d> buildSphericalRegion(const Event<d> & sphereCentre, double R);
 
     RectangularRegion<d> buildRectangularEnclosure(std::array<double, 2*d> inputBounds);
 
@@ -130,11 +132,18 @@ CylindricalRegion<d> SprinklerBuilder<d>::buildCylinderRegion(
 
 //---------------------------------------------------------------------------------------------------------------------
 
-
 template<int d>
 RectangularRegion<d> SprinklerBuilder<d>::buildRectangularRegion(std::array<double, 2*d> inputBounds)
 {
     return RectangularRegion<d>(inputBounds);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+SphericalRegion<d> SprinklerBuilder<d>::buildSphericalRegion(const Event<d> & sphereCentre, double R)
+{
+    return SphericalRegion<d>(sphereCentre, R);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
