@@ -30,7 +30,11 @@ public:
     // void buildKoluzaKlein(std::array<double, 2*d> bounds);
 
     CausalRegion<d> buildCausalRegion(const Event<d> &, const Event<d> &);
-    // void buildCylinderRegion(int axis, Event<d> cylinderCentre, double cylinderLength, double cylinderRadius);
+    CylindricalRegion<d> buildCylinderRegion(
+        int axis,
+        Event<d> cylinderCentre,
+        double cylinderLength,
+        double cylinderRadius);
     RectangularRegion<d> buildRectangularRegion(std::array<double, 2*d> inputBounds);
 
     RectangularRegion<d> buildRectangularEnclosure(std::array<double, 2*d> inputBounds);
@@ -109,6 +113,20 @@ CausalRegion<d> SprinklerBuilder<d>::buildCausalRegion(const Event<d> & bottom, 
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+CylindricalRegion<d> SprinklerBuilder<d>::buildCylinderRegion(
+    int axis,
+    Event<d> cylinderCentre,
+    double cylinderLength,
+    double cylinderRadius
+)
+{
+    return CylindricalRegion<d>(axis, cylinderCentre, cylinderLength, cylinderRadius);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 
 template<int d>
 RectangularRegion<d> SprinklerBuilder<d>::buildRectangularRegion(std::array<double, 2*d> inputBounds)
