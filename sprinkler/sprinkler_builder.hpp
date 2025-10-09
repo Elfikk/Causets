@@ -36,7 +36,10 @@ public:
     RectangularRegion<d> buildRectangularEnclosure(std::array<double, 2*d> inputBounds);
 
     template<typename SpacetimeT, typename RegionT>
-    Sprinkler<d, SpacetimeT, RegionT> getSprinkler(SpacetimeT spacetime, RegionT region, RectangularRegion<d> enclosure)
+    Sprinkler<d, SpacetimeT, RegionT> getSprinkler(
+        SpacetimeT spacetime,
+        RegionT region,
+        RectangularRegion<d> enclosure)
     {
         return buildSprinkler(spacetime, region, enclosure);
     }
@@ -53,7 +56,10 @@ private:
 
 template<int d>
 template<typename SpacetimeT, typename RegionT>
-Sprinkler<d, SpacetimeT, RegionT> SprinklerBuilder<d>::buildSprinkler(SpacetimeT spacetime, RegionT region, RectangularRegion<d> enclosure)
+Sprinkler<d, SpacetimeT, RegionT> SprinklerBuilder<d>::buildSprinkler(
+    SpacetimeT spacetime,
+    RegionT region,
+    RectangularRegion<d> enclosure)
 {
     Sprinkler<d, SpacetimeT, RegionT> sprinkler;
     sprinkler.setSpacetime(spacetime);

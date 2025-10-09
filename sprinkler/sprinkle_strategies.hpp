@@ -46,7 +46,10 @@ namespace SprinkleStrategy
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d, typename RegionT>
-std::optional<Event<d>> doSprinkleEvent(RegionT & sprinkleRegion, RectangularRegion<d> & enclosingRegion, minkowski_spacetime)
+std::optional<Event<d>> doSprinkleEvent(
+    RegionT & sprinkleRegion,
+    RectangularRegion<d> & enclosingRegion,
+    minkowski_spacetime)
 {
     const auto randomNums = SprinkleUtils::generateRandomNumbers<d>();
     std::cout << "Coordinates:\n";
@@ -69,7 +72,10 @@ std::optional<Event<d>> doSprinkleEvent(RegionT & sprinkleRegion, RectangularReg
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d, typename RegionT>
-std::optional<Event<d>> doSprinkleEvent(RegionT & sprinkleRegion, RectangularRegion<d> & enclosingRegion, ads_spacetime)
+std::optional<Event<d>> doSprinkleEvent(
+    RegionT & sprinkleRegion,
+    RectangularRegion<d> & enclosingRegion,
+    ads_spacetime)
 {
     const auto randomNums = SprinkleUtils::generateRandomNumbers<d>();
     std::cout << "Coordinates:\n";

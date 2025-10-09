@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <vector>
 
+//---------------------------------------------------------------------------------------------------------------------
+
 template<int d, typename SpacetimeT>
 class Sprinkle
 {

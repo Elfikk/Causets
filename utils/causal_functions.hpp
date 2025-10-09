@@ -14,7 +14,6 @@ namespace CausalUtils
 template<int d, typename SpacetimeT>
 std::function<bool(const Event<d>&)> isInCausalRegion(const SpacetimeT & spacetime, Event<d> bottom, Event<d> top)
 {
-    // I don't think this will work; copies of these parameters surely will leave the scope of this builder function and be deleted?
     auto causalFunction = [spacetime, bottom, top](const Event<d> & event)
     {
         const auto bottomRelation = spacetime.causalRelation(bottom, event);

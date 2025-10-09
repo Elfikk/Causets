@@ -54,7 +54,9 @@ void DirectedGraph::addEdge(nodeId from, nodeId to)
 
     if (reverseEdges.find(from) != reverseEdges.end())
     {
-        std::__throw_invalid_argument("Trying to insert edge between nodes that are connected in the reverse direction.");
+        std::__throw_invalid_argument(
+            "Trying to insert edge between nodes that are connected in the reverse direction."
+        );
     }
 
     auto & destNodes = adjacencyList.at(from);
