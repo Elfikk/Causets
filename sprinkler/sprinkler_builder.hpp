@@ -109,7 +109,10 @@ CausalRegion<d> SprinklerBuilder<d>::buildCausalRegion(const Event<d> & bottom, 
         auto causalRegion = CausalRegion<d>(causalFunc);
         return causalRegion;
     }
-    // Throw an exception for trying to build the region without defining the spacetime.
+    else
+    {
+        std::__throw_runtime_error("Tried to build a region without specifying a spacetime first.");
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
