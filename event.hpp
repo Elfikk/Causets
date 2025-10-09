@@ -2,6 +2,8 @@
 
 #include <array>
 
+//---------------------------------------------------------------------------------------------------------------------
+
 template<int d>
 class Event
 {
@@ -14,7 +16,21 @@ public:
 
     double operator[](int i) const { return coordinates[i]; }
 
+    Event<d> operator-(const Event<d> & rhs);
+
 private:
     std::array<double, d> coordinates;
 };
 
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+Event<d> Event<d>::operator-(const Event<d> & rhs)
+{
+    Event<d> lhs;
+    for (int i = 0; i < d; i++)
+    {
+        lhs.coordinates[i] = this->coordinates[i] - rhs.coordinates[i];
+    }
+    return lhs;
+}
