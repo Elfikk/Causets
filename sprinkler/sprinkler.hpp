@@ -8,6 +8,7 @@
 #include "sprinkler/sprinkle.hpp"
 #include "sprinkler/sprinkle_strategies.hpp"
 
+#include <iostream>
 #include <optional>
 #include <memory>
 
@@ -52,6 +53,7 @@ Sprinkle<d, SpacetimeT> Sprinkler<d, SpacetimeT, RegionT>::sprinkle(const int po
             generatedPoints++;
             sprinkle.addEvent(*potentialPoint);
         }
+        std::cout << "Number of generated points: " << generatedPoints << "\n";
     }
 
     return sprinkle;
