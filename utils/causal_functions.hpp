@@ -35,7 +35,7 @@ std::function<bool(const Event<d>&)> isInCausalRegion(const AdS<d> spacetime, Ev
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-std::function<bool(const Event<d>&)> isInCausalRegion(Minkowski<d> * spacetime, Event<d> bottom, Event<d> top)
+std::function<bool(const Event<d>&)> isInCausalRegion(const Minkowski<d> spacetime, Event<d> bottom, Event<d> top)
 {
     return isInCausalRegion<d, Minkowski<d>>(spacetime, bottom, top);
 }
