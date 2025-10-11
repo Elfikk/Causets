@@ -6,6 +6,7 @@
 
 #include "regions/causal_region.hpp"
 #include "regions/cylindrical.hpp"
+#include "regions/extended_causal_region.hpp"
 #include "regions/rectangular.hpp"
 #include "regions/spherical.hpp"
 
@@ -36,6 +37,18 @@ public:
         Event<d> cylinderCentre,
         double cylinderLength,
         double cylinderRadius);
+    ExtendedCausalRegion<d> buildExtendedCausalRegion(
+        const Event<d-1> & bottom,
+        const Event<d-1> & top,
+        std::array<double, 2> extension,
+        int extension_axis
+    );
+    ExtendedCausalRegion<d> buildExtendedCausalRegion(
+        const Event<d> & bottom,
+        const Event<d> & top,
+        std::array<double, 2> extension,
+        int extension_axis
+    );
     RectangularRegion<d> buildRectangularRegion(std::array<double, 2*d> inputBounds);
     SphericalRegion<d> buildSphericalRegion(const Event<d> & sphereCentre, double R);
 
@@ -53,6 +66,9 @@ public:
 private:
     template<typename SpacetimeT, typename RegionT>
     Sprinkler<d, SpacetimeT, RegionT> buildSprinkler(SpacetimeT, RegionT, RectangularRegion<d>);
+
+    template<typename SpacetimeT>
+    CausalRegion<d-1> buildCausalRegion(const Event<d-1> &, const Event<d-1> &, SpacetimeT);
 
     std::optional<Minkowski<d>> minkowski = std::nullopt;
     std::optional<AdS<d>> ads = std::nullopt;
@@ -120,6 +136,65 @@ CausalRegion<d> SprinklerBuilder<d>::buildCausalRegion(const Event<d> & bottom, 
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
+template<typename SpacetimeT>
+CausalRegion<d-1> SprinklerBuilder<d>::buildCausalRegion(
+    const Event<d-1> & bottom,
+    const Event<d-1> & top,
+    SpacetimeT spacetime)
+{
+    auto causalFunc = CausalUtils::isInCausalRegion<d-1>(spacetime, bottom, top);
+    auto causalRegion = CausalRegion<d-1>(causalFunc);
+    return causalRegion;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+ExtendedCausalRegion<d> SprinklerBuilder<d>::buildExtendedCausalRegion(
+    const Event<d> & bottom,
+    const Event<d> & top,
+    std::array<double, 2> extension,
+    int extension_axis
+)
+{
+    std::array<double, d-1> reducedBottom;
+    std::array<double, d-1> reducedTop;
+    int index = 0;
+    for (int i = 0; i < d; i++)
+    {
+        if (i != extension_axis)
+        {
+            reducedBottom[index] = bottom[index];
+            reducedTop[index] = top[index];
+            index += 1;
+        }
+    }
+    Event<d-1> reducedBottomEvent(reducedBottom);
+    Event<d-1> reducedTopEvent(reducedTop);
+
+    CausalRegion<d-1> causalRegion([](const Event<d-1> &){ return true; });
+    if (ads.has_value())
+    {
+        if (extension_axis == 1)
+        {
+            causalRegion = buildCausalRegion(reducedBottomEvent, reducedTopEvent, Minkowski<d-1>());
+        }
+        else
+        {
+            causalRegion = buildCausalRegion(reducedBottomEvent, reducedTopEvent, AdS<d-1>(ads->getR0()));
+        }
+    }
+    else if (minkowski.has_value())
+    {
+        causalRegion = buildCausalRegion(reducedBottomEvent, reducedTopEvent, Minkowski<d-1>());
+    }
+
+    return ExtendedCausalRegion<d>(causalRegion, extension, extension_axis);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
 CylindricalRegion<d> SprinklerBuilder<d>::buildCylinderRegion(
     int axis,
     Event<d> cylinderCentre,
@@ -131,6 +206,7 @@ CylindricalRegion<d> SprinklerBuilder<d>::buildCylinderRegion(
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
 
 template<int d>
 RectangularRegion<d> SprinklerBuilder<d>::buildRectangularRegion(std::array<double, 2*d> inputBounds)
