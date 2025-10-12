@@ -3,7 +3,7 @@
 #include "event.hpp"
 
 #include "spacetimes/ads.hpp"
-#include "spacetimes/deSitter.hpp"
+#include "spacetimes/de_sitter.hpp"
 #include "spacetimes/minkowski.hpp"
 #include "spacetimes/spacetime.hpp"
 
