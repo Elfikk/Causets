@@ -1,5 +1,8 @@
 #include "directed_graph.hpp"
 
+#include <algorithm>
+#include <iostream>
+
 //---------------------------------------------------------------------------------------------------------------------
 
 DirectedGraph::DirectedGraph(unsigned int numNodes)
@@ -91,4 +94,80 @@ void DirectedGraph::removeEdge(nodeId from, nodeId to)
     }
 
     destNodes.erase(to);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void DirectedGraph::dfsUtil(nodeId id, std::set<nodeId> & visitedNodes)
+{
+    visitedNodes.insert(id);
+    for (auto i : adjacencyList[id])
+    {
+        if (visitedNodes.find(i) == visitedNodes.end())
+        {
+            dfsUtil(i, visitedNodes);
+        }
+    }
+    topologicalOrder.push_back(id);
+    // std::cout << "Inserted " << id << " into topological order.\n";
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void DirectedGraph::findTopologicalOrder()
+{
+    std::set<nodeId> visited({});
+
+    for (nodeId i = 0; i < getNumNodes(); i++)
+    {
+        if (visited.find(i) == visited.end())
+        {
+            dfsUtil(i, visited);
+        }
+    }
+    std::reverse(topologicalOrder.begin(), topologicalOrder.end());
+
+    std::cout << "\nFinal Topological Order:\n";
+    for (const auto id : topologicalOrder)
+    {
+        std::cout << id << ",";
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+std::vector<nodeId> DirectedGraph::findLongestPath()
+{
+    if (topologicalOrder.size() == 0)
+    {
+        findTopologicalOrder();
+    }
+
+    std::map<nodeId, std::vector<nodeId>> longestPathToNodes;
+    for (nodeId node = 0; node < getNumNodes(); node++)
+    {
+        longestPathToNodes[node] = {};
+    }
+
+    size_t maxLength = 0;
+    nodeId maxId = 0;
+    for (auto nodeId : topologicalOrder)
+    {
+        for (auto otherId : adjacencyList[nodeId])
+        {
+            if (longestPathToNodes[otherId].size() <= longestPathToNodes[nodeId].size() + 1)
+            {
+                longestPathToNodes[otherId] = longestPathToNodes[nodeId];
+                longestPathToNodes[otherId].push_back(nodeId);
+                if (longestPathToNodes[otherId].size() > maxLength)
+                {
+                    maxLength = longestPathToNodes[otherId].size();
+                    maxId = otherId;
+                }
+            }
+        }
+    }
+
+    longestPathToNodes[maxId].push_back(maxId);
+    return longestPathToNodes[maxId];
 }

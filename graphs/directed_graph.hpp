@@ -6,6 +6,7 @@
 
 typedef unsigned int nodeId;
 
+// This is an unweighted directed graph actually.
 class DirectedGraph
 {
 public:
@@ -22,7 +23,14 @@ public:
 
     std::map<nodeId, std::set<nodeId>> getAdjacencyList() const { return adjacencyList; }
 
+    std::vector<nodeId> findLongestPath();
+
 private:
+    void findTopologicalOrder();
+    void dfsUtil(nodeId, std::set<nodeId> & visitedNodes);
+
     std::set<nodeId> nodes;
     std::map<nodeId, std::set<nodeId>> adjacencyList;
+
+    std::vector<nodeId> topologicalOrder;
 };
