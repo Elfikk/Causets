@@ -3,6 +3,7 @@
 #include <fstream>
 #include <set>
 #include <string>
+#include <vector>
 
 class DirectedGraph;
 
@@ -14,4 +15,7 @@ namespace GraphUtils
 
     // Dump Graph to CSV
     void dumpDagToCsv(const DirectedGraph & dag, const std::string filename);
+
+    // Dump Longest Path to CSV
+    void dumpDagLongestPathToCsv(const std::vector<unsigned int> & path, const std::string filename);
 }

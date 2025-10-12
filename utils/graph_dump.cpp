@@ -27,3 +27,21 @@ void GraphUtils::dumpDagToCsv(const DirectedGraph & dag, const std::string filen
     }
     nodeFile.close();
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void GraphUtils::dumpDagLongestPathToCsv(const std::vector<unsigned int> & path, const std::string filename)
+{
+    if (path.size() < 2)
+    {
+        return; // Should really throw an exception
+    }
+    std::ofstream nodeFile(filename);
+    nodeFile << path[0];
+    for (size_t i = 1; i < path.size(); i++)
+    {
+        nodeFile << ",";
+        nodeFile << path[i];
+    }
+    nodeFile.close();
+}
