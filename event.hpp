@@ -8,18 +8,18 @@ template<int d>
 class Event
 {
 public:
-    Event(std::array<double, d> coords) : coordinates(coords) {};
+    Event(std::array<long double, d> coords) : coordinates(coords) {};
 
-    double time() { return coordinates[0]; }
+    long double time() { return coordinates[0]; }
     // i >= 0
-    double spaceComp(int i) { return coordinates[i - 1]; }
+    long double spaceComp(int i) { return coordinates[i - 1]; }
 
-    double operator[](int i) const { return coordinates[i]; }
+    long double operator[](int i) const { return coordinates[i]; }
 
     Event<d> operator-(const Event<d> & rhs);
 
 private:
-    std::array<double, d> coordinates;
+    std::array<long double, d> coordinates;
 };
 
 //---------------------------------------------------------------------------------------------------------------------

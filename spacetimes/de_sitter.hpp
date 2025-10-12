@@ -16,13 +16,13 @@ class DeSitter: public Spacetime<d>
 public:
     typedef de_sitter_spacetime spacetime_class;
 
-    DeSitter(std::array<double, 2 * d> boundaries) : bounds(boundaries) {}
+    DeSitter(std::array<long double, 2 * d> boundaries) : bounds(boundaries) {}
     CausalRelation causalRelation(const Event<d> & a, const Event<d> & b) const override;
-    double getLowerBound(int i) const override { return bounds[2 * i]; }
-    double getUpperBound(int i) const override { return bounds[2 * i + 1]; }
+    long double getLowerBound(int i) const override { return bounds[2 * i]; }
+    long double getUpperBound(int i) const override { return bounds[2 * i + 1]; }
 
 private:
-    std::array<double, 2 * d> bounds;
+    std::array<long double, 2 * d> bounds;
 };
 
 //---------------------------------------------------------------------------------------------------------------------

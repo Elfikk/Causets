@@ -10,13 +10,13 @@ template<int d>
 class RectangularRegion : public Region<d>
 {
 public:
-    RectangularRegion(std::array<double, 2*d> inputBounds) : bounds(inputBounds) {}
+    RectangularRegion(std::array<long double, 2*d> inputBounds) : bounds(inputBounds) {}
     bool isInside(const Event<d> &) const override;
-    double getLowerBound(int coordinate) { return bounds[2 * coordinate]; };
-    double getUpperBound(int coordinate) { return bounds[2 * coordinate + 1]; };
+    long double getLowerBound(int coordinate) { return bounds[2 * coordinate]; };
+    long double getUpperBound(int coordinate) { return bounds[2 * coordinate + 1]; };
 
 private:
-    std::array<double, 2*d> bounds;
+    std::array<long double, 2*d> bounds;
 };
 
 //---------------------------------------------------------------------------------------------------------------------

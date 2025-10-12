@@ -15,16 +15,16 @@ public:
     CylindricalRegion(
         int axis,
         Event<d> cylinderCentre,
-        double cylinderLength,
-        double cylinderRadius
+        long double cylinderLength,
+        long double cylinderRadius
     );
     bool isInside(const Event<d> &) const override;
 
 private:
     int axisCoordinate;
-    std::array<double, 2> axisBounds;
+    std::array<long double, 2> axisBounds;
     Event<d> centre;
-    double radius;
+    long double radius;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -33,8 +33,8 @@ template<int d>
 CylindricalRegion<d>::CylindricalRegion(
     int axis,
     Event<d> cylinderCentre,
-    double cylinderLength,
-    double cylinderRadius
+    long double cylinderLength,
+    long double cylinderRadius
 )
 :
 axisCoordinate(axis),
@@ -42,7 +42,7 @@ centre(cylinderCentre),
 radius(cylinderRadius)
 {
     const auto halfLength = cylinderLength/2;
-    axisBounds = std::array<double, 2>({cylinderCentre[axis] - halfLength, cylinderCentre[axis] + halfLength});
+    axisBounds = std::array<long double, 2>({cylinderCentre[axis] - halfLength, cylinderCentre[axis] + halfLength});
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ bool CylindricalRegion<d>::isInside(const Event<d> & event) const
         return false;
     }
 
-    double sum_sq = 0;
+    long double sum_sq = 0;
     // Now check all other coordinates radius smaller than the advertised one
     for (int i = 0; i < d; i++)
     {

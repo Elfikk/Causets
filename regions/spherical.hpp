@@ -8,12 +8,12 @@ template<int d>
 class SphericalRegion: public Region<d>
 {
 public:
-    SphericalRegion(Event<d> sphereCentre, double R) : centre(sphereCentre), radius(R) {}
+    SphericalRegion(Event<d> sphereCentre, long double R) : centre(sphereCentre), radius(R) {}
     bool isInside(const Event<d> &) const override;
 
 private:
     Event<d> centre;
-    double radius;
+    long double radius;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ private:
 template<int d>
 bool SphericalRegion<d>::isInside(const Event<d> & event) const
 {
-    double sum = 0;
+    long double sum = 0;
     for (int i = 0; i < d; i++)
     {
         sum += (centre[i] - event[i]) * (centre[i] - event[i]);

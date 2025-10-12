@@ -20,16 +20,16 @@ public:
     typedef minkowski_spacetime spacetime_class;
 
     Minkowski();
-    Minkowski(std::array<double, 2 * d> boundaries);
+    Minkowski(std::array<long double, 2 * d> boundaries);
     CausalRelation causalRelation(const Event<d> & a, const Event<d> & b) const override;
 
-    double getLowerBound(int i) const { return bounds[2 * i]; }
-    double getUpperBound(int i) const { return bounds[2 * i + 1]; }
+    long double getLowerBound(int i) const { return bounds[2 * i]; }
+    long double getUpperBound(int i) const { return bounds[2 * i + 1]; }
 
 private:
-    double interval(const Event<d> & a, const Event<d> & b) const;
-    std::array<double, d> metric;
-    std::array<double, 2 * d> bounds;
+    long double interval(const Event<d> & a, const Event<d> & b) const;
+    std::array<long double, d> metric;
+    std::array<long double, 2 * d> bounds;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -53,15 +53,15 @@ Minkowski<d>::Minkowski()
 
     for (int i = 0; i < d; i++)
     {
-        bounds[2 * i] = std::numeric_limits<double>::lowest();
-        bounds[2 * i + 1] = std::numeric_limits<double>::max();
+        bounds[2 * i] = std::numeric_limits<long double>::lowest();
+        bounds[2 * i + 1] = std::numeric_limits<long double>::max();
     }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-Minkowski<d>::Minkowski(std::array<double, 2 * d> boundaries) : bounds(boundaries)
+Minkowski<d>::Minkowski(std::array<long double, 2 * d> boundaries) : bounds(boundaries)
 {
     metric[0] = -1;
     for (int i = 1; i < d; i++)
@@ -91,9 +91,9 @@ CausalRelation Minkowski<d>::causalRelation(const Event<d> & a, const Event<d> &
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-double Minkowski<d>::interval(const Event<d> & a, const Event<d> & b) const
+long double Minkowski<d>::interval(const Event<d> & a, const Event<d> & b) const
 {
-    double separation = 0;
+    long double separation = 0;
     for (int i = 0; i < d; i++)
     {
         separation += metric[i] * (b[i] - a[i]) * (b[i] - a[i]);

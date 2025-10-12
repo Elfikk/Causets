@@ -13,7 +13,7 @@ class ExtendedCausalRegion: public Region<d>
 public:
     ExtendedCausalRegion(
         CausalRegion<d-1> region,
-        std::array<double, 2> extension,
+        std::array<long double, 2> extension,
         int extension_axis
     )
     :
@@ -26,7 +26,7 @@ public:
 
 private:
     CausalRegion<d-1> causalRegion;
-    std::array<double, 2> bounds;
+    std::array<long double, 2> bounds;
     int axis;
 };
 
@@ -40,7 +40,7 @@ bool ExtendedCausalRegion<d>::isInside(const Event<d> & event) const
         return false;
     }
 
-    std::array<double, d-1> reduced;
+    std::array<long double, d-1> reduced;
     int index = 0;
     for (int i = 0; i < d; i++)
     {

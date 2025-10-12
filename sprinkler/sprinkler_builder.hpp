@@ -28,32 +28,32 @@ public:
     SprinklerBuilder() {}
 
     Minkowski<d> buildMinkowski();
-    AdS<d> buildAds(double R0);
-    DeSitter<d> buildDeSitter(std::array<double, 2 * d> boundaries);
-    // void buildKoluzaKlein(std::array<double, 2*d> bounds);
+    AdS<d> buildAds(long double R0);
+    DeSitter<d> buildDeSitter(std::array<long double, 2 * d> boundaries);
+    // void buildKoluzaKlein(std::array<long double, 2*d> bounds);
 
     CausalRegion<d> buildCausalRegion(const Event<d> &, const Event<d> &);
     CylindricalRegion<d> buildCylinderRegion(
         int axis,
         Event<d> cylinderCentre,
-        double cylinderLength,
-        double cylinderRadius);
+        long double cylinderLength,
+        long double cylinderRadius);
     ExtendedCausalRegion<d> buildExtendedCausalRegion(
         const Event<d-1> & bottom,
         const Event<d-1> & top,
-        std::array<double, 2> extension,
+        std::array<long double, 2> extension,
         int extension_axis
     );
     ExtendedCausalRegion<d> buildExtendedCausalRegion(
         const Event<d> & bottom,
         const Event<d> & top,
-        std::array<double, 2> extension,
+        std::array<long double, 2> extension,
         int extension_axis
     );
-    RectangularRegion<d> buildRectangularRegion(std::array<double, 2*d> inputBounds);
-    SphericalRegion<d> buildSphericalRegion(const Event<d> & sphereCentre, double R);
+    RectangularRegion<d> buildRectangularRegion(std::array<long double, 2*d> inputBounds);
+    SphericalRegion<d> buildSphericalRegion(const Event<d> & sphereCentre, long double R);
 
-    RectangularRegion<d> buildRectangularEnclosure(std::array<double, 2*d> inputBounds);
+    RectangularRegion<d> buildRectangularEnclosure(std::array<long double, 2*d> inputBounds);
 
     template<typename SpacetimeT, typename RegionT>
     Sprinkler<d, SpacetimeT, RegionT> getSprinkler(
@@ -106,7 +106,7 @@ Minkowski<d> SprinklerBuilder<d>::buildMinkowski()
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-AdS<d> SprinklerBuilder<d>::buildAds(double R0)
+AdS<d> SprinklerBuilder<d>::buildAds(long double R0)
 {
     minkowski = std::nullopt;
     deSitter = std::nullopt;
@@ -117,7 +117,7 @@ AdS<d> SprinklerBuilder<d>::buildAds(double R0)
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-DeSitter<d> SprinklerBuilder<d>::buildDeSitter(std::array<double, 2 * d> boundaries)
+DeSitter<d> SprinklerBuilder<d>::buildDeSitter(std::array<long double, 2 * d> boundaries)
 {
     minkowski = std::nullopt;
     ads = std::nullopt;
@@ -174,12 +174,12 @@ template<int d>
 ExtendedCausalRegion<d> SprinklerBuilder<d>::buildExtendedCausalRegion(
     const Event<d> & bottom,
     const Event<d> & top,
-    std::array<double, 2> extension,
+    std::array<long double, 2> extension,
     int extension_axis
 )
 {
-    std::array<double, d-1> reducedBottom;
-    std::array<double, d-1> reducedTop;
+    std::array<long double, d-1> reducedBottom;
+    std::array<long double, d-1> reducedTop;
     int index = 0;
     for (int i = 0; i < d; i++)
     {
@@ -219,8 +219,8 @@ template<int d>
 CylindricalRegion<d> SprinklerBuilder<d>::buildCylinderRegion(
     int axis,
     Event<d> cylinderCentre,
-    double cylinderLength,
-    double cylinderRadius
+    long double cylinderLength,
+    long double cylinderRadius
 )
 {
     return CylindricalRegion<d>(axis, cylinderCentre, cylinderLength, cylinderRadius);
@@ -230,7 +230,7 @@ CylindricalRegion<d> SprinklerBuilder<d>::buildCylinderRegion(
 
 
 template<int d>
-RectangularRegion<d> SprinklerBuilder<d>::buildRectangularRegion(std::array<double, 2*d> inputBounds)
+RectangularRegion<d> SprinklerBuilder<d>::buildRectangularRegion(std::array<long double, 2*d> inputBounds)
 {
     return RectangularRegion<d>(inputBounds);
 }
@@ -238,7 +238,7 @@ RectangularRegion<d> SprinklerBuilder<d>::buildRectangularRegion(std::array<doub
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-SphericalRegion<d> SprinklerBuilder<d>::buildSphericalRegion(const Event<d> & sphereCentre, double R)
+SphericalRegion<d> SprinklerBuilder<d>::buildSphericalRegion(const Event<d> & sphereCentre, long double R)
 {
     return SphericalRegion<d>(sphereCentre, R);
 }
@@ -246,7 +246,7 @@ SphericalRegion<d> SprinklerBuilder<d>::buildSphericalRegion(const Event<d> & sp
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-RectangularRegion<d> SprinklerBuilder<d>::buildRectangularEnclosure(std::array<double, 2*d> inputBounds)
+RectangularRegion<d> SprinklerBuilder<d>::buildRectangularEnclosure(std::array<long double, 2*d> inputBounds)
 {
     return RectangularRegion<d>(inputBounds);
 }

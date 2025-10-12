@@ -35,8 +35,8 @@ public:
 
     virtual ~Spacetime() {}
     virtual CausalRelation causalRelation(const Event<d> & a, const Event<d> & b) const = 0;
-    virtual double getLowerBound(int i) const = 0;
-    virtual double getUpperBound(int i) const = 0;
+    virtual long double getLowerBound(int i) const = 0;
+    virtual long double getUpperBound(int i) const = 0;
 };
 
 //---------------------------------------------------------------------------------------------------------------------

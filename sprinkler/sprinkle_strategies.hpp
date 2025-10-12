@@ -18,12 +18,12 @@
 namespace SprinkleUtils
 {
 template<int d>
-std::array<double, d> generateRandomNumbers()
+std::array<long double, d> generateRandomNumbers()
 {
     // Good old urandom
     std::random_device rd("/dev/urandom");
     std::uniform_real_distribution<> uniform(0.0, 1.0);
-    std::array<double, d> randomNums;
+    std::array<long double, d> randomNums;
     std::cout << "Random Num:\n";
     for (int i = 0; i < d; i++)
     {
@@ -34,7 +34,7 @@ std::array<double, d> generateRandomNumbers()
     return randomNums;
 }
 
-double linearInterpolate(double x, double a, double b)
+long double linearInterpolate(long double x, long double a, long double b)
 {
     return (b - a) * x + a;
 }
@@ -55,7 +55,7 @@ std::optional<Event<d>> doSprinkleEvent(
 {
     const auto randomNums = SprinkleUtils::generateRandomNumbers<d>();
     std::cout << "Coordinates:\n";
-    std::array<double, d> coords;
+    std::array<long double, d> coords;
     for (int i = 0; i < d; i++)
     {
         coords[i] = SprinkleUtils::linearInterpolate(
@@ -82,7 +82,7 @@ std::optional<Event<d>> doSprinkleEvent(
     const auto randomNums = SprinkleUtils::generateRandomNumbers<d>();
     std::cout << "Coordinates:\n";
     // Now map random numbers to coordinates within enclosing region
-    std::array<double, d> coords;
+    std::array<long double, d> coords;
     const auto R1 = enclosingRegion.getUpperBound(1);
     const auto R0 = enclosingRegion.getLowerBound(1);
     const auto R0_pow = pow(R0, 1 - d);
@@ -120,7 +120,7 @@ std::optional<Event<2>> doSprinkleEvent(
 {
     const auto randomNums = SprinkleUtils::generateRandomNumbers<2>();
     std::cout << "Coordinates:\n";
-    std::array<double, 2> coords;
+    std::array<long double, 2> coords;
     coords[1] = SprinkleUtils::linearInterpolate(
         randomNums[1],
         enclosingRegion.getLowerBound(1),

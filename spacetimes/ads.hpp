@@ -16,19 +16,19 @@ class AdS: public Spacetime<d>
 public:
     typedef ads_spacetime spacetime_class;
 
-    AdS(double lowerR) : R0(lowerR) {}
+    AdS(long double lowerR) : R0(lowerR) {}
     CausalRelation causalRelation(const Event<d> & a, const Event<d> & b) const override;
 
-    double getLowerBound(int i) const override;
-    double getUpperBound(int i) const override { return std::numeric_limits<double>::max(); }
+    long double getLowerBound(int i) const override;
+    long double getUpperBound(int i) const override { return std::numeric_limits<long double>::max(); }
 
-    double getR0() { return R0; }
+    long double getR0() { return R0; }
 
 private:
     // std function that takes 1st space component of Event and returns an
     // array for the local metric
 
-    double R0 = 0.1;
+    long double R0 = 0.1;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -42,13 +42,13 @@ struct spacetime_traits<AdS<d>>
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-double AdS<d>::getLowerBound(int i) const
+long double AdS<d>::getLowerBound(int i) const
 {
     if (i == 1)
     {
         return R0;
     }
-    return std::numeric_limits<double>::lowest();
+    return std::numeric_limits<long double>::lowest();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
