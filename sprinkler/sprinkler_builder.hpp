@@ -29,6 +29,7 @@ public:
 
     Minkowski<d> buildMinkowski();
     AdS<d> buildAds(double R0);
+    DeSitter<d> buildDeSitter(std::array<double, 2 * d> boundaries);
     // void buildKoluzaKlein(std::array<double, 2*d> bounds);
 
     CausalRegion<d> buildCausalRegion(const Event<d> &, const Event<d> &);
@@ -72,6 +73,7 @@ private:
 
     std::optional<Minkowski<d>> minkowski = std::nullopt;
     std::optional<AdS<d>> ads = std::nullopt;
+    std::optional<DeSitter<d>> deSitter = std::nullopt;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -96,6 +98,7 @@ template<int d>
 Minkowski<d> SprinklerBuilder<d>::buildMinkowski()
 {
     ads = std::nullopt;
+    deSitter = std::nullopt;
     minkowski = Minkowski<d>();
     return minkowski.value();
 }
@@ -106,8 +109,20 @@ template<int d>
 AdS<d> SprinklerBuilder<d>::buildAds(double R0)
 {
     minkowski = std::nullopt;
+    deSitter = std::nullopt;
     ads = AdS<d>(R0);
     return ads.value();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+DeSitter<d> SprinklerBuilder<d>::buildDeSitter(std::array<double, 2 * d> boundaries)
+{
+    minkowski = std::nullopt;
+    ads = std::nullopt;
+    deSitter = DeSitter<d>(boundaries);
+    return deSitter.value();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -124,6 +139,12 @@ CausalRegion<d> SprinklerBuilder<d>::buildCausalRegion(const Event<d> & bottom, 
     else if (ads.has_value())
     {
         auto causalFunc = CausalUtils::isInCausalRegion<d>(ads.value(), bottom, top);
+        auto causalRegion = CausalRegion<d>(causalFunc);
+        return causalRegion;
+    }
+    else if (deSitter.has_value())
+    {
+        auto causalFunc = CausalUtils::isInCausalRegion<d>(deSitter.value(), bottom, top);
         auto causalRegion = CausalRegion<d>(causalFunc);
         return causalRegion;
     }

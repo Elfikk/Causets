@@ -3,10 +3,12 @@
 #include "event.hpp"
 
 #include "spacetimes/ads.hpp"
+#include "spacetimes/deSitter.hpp"
 #include "spacetimes/minkowski.hpp"
 #include "spacetimes/spacetime.hpp"
 
 #include <array>
+#include <cmath>
 #include <iostream>
 #include <optional>
 #include <random>
@@ -107,6 +109,27 @@ std::optional<Event<d>> doSprinkleEvent(
     std::cout << "Is inside " << sprinkleRegion.isInside(event) << "\n";
     return sprinkleRegion.isInside(event) ? std::optional(event) : std::nullopt;
 };
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<typename RegionT>
+std::optional<Event<2>> doSprinkleEvent(
+    RegionT & sprinkleRegion,
+    RectangularRegion<2> & enclosingRegion,
+    de_sitter_spacetime)
+{
+    const auto randomNums = SprinkleUtils::generateRandomNumbers<2>();
+    std::cout << "Coordinates:\n";
+    std::array<double, 2> coords;
+    coords[1] = SprinkleUtils::linearInterpolate(
+        randomNums[1],
+        enclosingRegion.getLowerBound(1),
+        enclosingRegion.getUpperBound(1)
+    );
+    coords[0] = atan((2 * randomNums[0] - 1) * tan(enclosingRegion.getUpperBound(0)));
+    Event<2> event(coords);
+    return sprinkleRegion.isInside(event) ? std::optional(event) : std::nullopt;
+}
 
 //---------------------------------------------------------------------------------------------------------------------
 
