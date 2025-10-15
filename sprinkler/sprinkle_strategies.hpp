@@ -7,6 +7,8 @@
 #include "spacetimes/minkowski.hpp"
 #include "spacetimes/spacetime.hpp"
 
+#include "regions/region.hpp"
+
 #include <array>
 #include <cmath>
 #include <iostream>
@@ -47,9 +49,9 @@ namespace SprinkleStrategy
 
 //---------------------------------------------------------------------------------------------------------------------
 
-template<int d, typename RegionT>
+template<int d>
 std::optional<Event<d>> doSprinkleEvent(
-    RegionT & sprinkleRegion,
+    Region<d> * sprinkleRegion,
     RectangularRegion<d> & enclosingRegion,
     minkowski_spacetime)
 {
@@ -68,14 +70,14 @@ std::optional<Event<d>> doSprinkleEvent(
     std::cout << "\n";
 
     Event<d> event(coords);
-    return sprinkleRegion.isInside(event) ? std::optional(event) : std::nullopt;
+    return sprinkleRegion->isInside(event) ? std::optional(event) : std::nullopt;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
 
-template<int d, typename RegionT>
+template<int d>
 std::optional<Event<d>> doSprinkleEvent(
-    RegionT & sprinkleRegion,
+    Region<d> * sprinkleRegion,
     RectangularRegion<d> & enclosingRegion,
     ads_spacetime)
 {
@@ -107,14 +109,13 @@ std::optional<Event<d>> doSprinkleEvent(
 
     Event<d> event(coords);
     std::cout << "Is inside " << sprinkleRegion.isInside(event) << "\n";
-    return sprinkleRegion.isInside(event) ? std::optional(event) : std::nullopt;
+    return sprinkleRegion->isInside(event) ? std::optional(event) : std::nullopt;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
 
-template<typename RegionT>
 std::optional<Event<2>> doSprinkleEvent(
-    RegionT & sprinkleRegion,
+    Region<2> * sprinkleRegion,
     RectangularRegion<2> & enclosingRegion,
     de_sitter_spacetime)
 {
@@ -128,13 +129,13 @@ std::optional<Event<2>> doSprinkleEvent(
     );
     coords[0] = atan((2 * randomNums[0] - 1) * tan(enclosingRegion.getUpperBound(0)));
     Event<2> event(coords);
-    return sprinkleRegion.isInside(event) ? std::optional(event) : std::nullopt;
+    return sprinkleRegion->isInside(event) ? std::optional(event) : std::nullopt;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-template<int d, typename SpacetimeT, typename RegionT>
-std::optional<Event<d>> sprinkleEvent(RegionT sprinkleRegion, RectangularRegion<d> & enclosingRegion)
+template<int d, typename SpacetimeT>
+std::optional<Event<d>> sprinkleEvent(Region<d> * sprinkleRegion, RectangularRegion<d> & enclosingRegion)
 {
     return doSprinkleEvent(sprinkleRegion, enclosingRegion, typename spacetime_traits<SpacetimeT>::spacetime_class());
 }

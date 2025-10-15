@@ -47,7 +47,7 @@ Sprinkle<d, SpacetimeT> Sprinkler<d, SpacetimeT, RegionT>::sprinkle(const int po
 
     while (generatedPoints < points)
     {
-        auto potentialPoint = SprinkleStrategy::sprinkleEvent<d, SpacetimeT>(region.value(), enclosingRegion.value());
+        auto potentialPoint = SprinkleStrategy::sprinkleEvent<d, SpacetimeT>(&region.value(), enclosingRegion.value());
         if (potentialPoint.has_value())
         {
             generatedPoints++;
