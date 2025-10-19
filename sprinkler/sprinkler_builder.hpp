@@ -423,13 +423,6 @@ std::function<CausalRelation(const Event<d> &, const Event<d> &)> SprinklerBuild
 template<int d>
 Sprinkler<d> SprinklerBuilder<d>::getSprinkler()
 {
-    if (currentSpacetime == ActiveSpacetime::None || currentRegion == ActiveRegion::None || currentEncloser == ActiveEncloser::None)
-    {
-        // This is not quite true - the encloser is only necessary as for now we
-        // always rely on sprinkling into a rectangular region.
-        // Should have really called it a hypercubic region shouldn't have I?
-        std::__throw_runtime_error("Cannot sprinkle without a spacetime, region and enclosing region not defined.");
-    }
     auto fullSprinkleFunc = selectSpacetimeSprinkleFunc();
     auto sprinkleFunc = selectSprinklerSprinkleFunc(fullSprinkleFunc);
     auto causalFunc = selectCausalFunction();
