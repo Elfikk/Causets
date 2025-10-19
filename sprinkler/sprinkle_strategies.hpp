@@ -108,7 +108,7 @@ std::optional<Event<d>> doSprinkleEvent(
     std::cout << "\n";
 
     Event<d> event(coords);
-    std::cout << "Is inside " << sprinkleRegion.isInside(event) << "\n";
+    std::cout << "Is inside " << sprinkleRegion->isInside(event) << "\n";
     return sprinkleRegion->isInside(event) ? std::optional(event) : std::nullopt;
 };
 
