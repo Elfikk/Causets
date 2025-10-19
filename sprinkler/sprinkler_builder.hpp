@@ -107,6 +107,7 @@ private:
         None
     };
     ActiveEncloser currentEncloser = ActiveEncloser::None;
+    std::variant<RectangularRegion<d>> enclosure = RectangularRegion<d>({});
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -326,6 +327,11 @@ SphericalRegion<d> SprinklerBuilder<d>::buildSphericalRegion(const Event<d> & sp
 template<int d>
 RectangularRegion<d> SprinklerBuilder<d>::buildRectangularEnclosure(std::array<long double, 2*d> inputBounds)
 {
+    if ((currentSpacetime == ActiveSpacetime::None) || (currentRegion == ActiveRegion::None))
+    {
+        std::__throw_runtime_error("Need a spacetime and region before building an enclosing region.");
+    }
     currentEncloser = ActiveEncloser::Rectangular;
-    return RectangularRegion<d>(inputBounds);
+    enclosure = RectangularRegion<d>(inputBounds);
+    return std::get<RectangularRegion<d>>(enclosure);
 }
