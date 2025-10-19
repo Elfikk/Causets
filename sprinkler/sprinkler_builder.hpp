@@ -263,6 +263,10 @@ CylindricalRegion<d> SprinklerBuilder<d>::buildCylinderRegion(
     long double cylinderRadius
 )
 {
+    if (currentSpacetime == ActiveSpacetime::None)
+    {
+        std::__throw_runtime_error("Need a spacetime to build a region.");
+    }
     currentRegion = ActiveRegion::Cylindrical;
     currentEncloser = ActiveEncloser::None;
     return CylindricalRegion<d>(axis, cylinderCentre, cylinderLength, cylinderRadius);
@@ -274,6 +278,10 @@ CylindricalRegion<d> SprinklerBuilder<d>::buildCylinderRegion(
 template<int d>
 RectangularRegion<d> SprinklerBuilder<d>::buildRectangularRegion(std::array<long double, 2*d> inputBounds)
 {
+    if (currentSpacetime == ActiveSpacetime::None)
+    {
+        std::__throw_runtime_error("Need a spacetime to build a region.");
+    }
     currentRegion = ActiveRegion::Rectangular;
     currentEncloser = ActiveEncloser::None;
     return RectangularRegion<d>(inputBounds);
@@ -284,6 +292,10 @@ RectangularRegion<d> SprinklerBuilder<d>::buildRectangularRegion(std::array<long
 template<int d>
 SphericalRegion<d> SprinklerBuilder<d>::buildSphericalRegion(const Event<d> & sphereCentre, long double R)
 {
+    if (currentSpacetime == ActiveSpacetime::None)
+    {
+        std::__throw_runtime_error("Need a spacetime to build a region.");
+    }
     currentRegion = ActiveRegion::Spherical;
     currentEncloser = ActiveEncloser::None;
     return SphericalRegion<d>(sphereCentre, R);
