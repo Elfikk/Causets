@@ -57,22 +57,9 @@ public:
 
     RectangularRegion<d> buildRectangularEnclosure(std::array<long double, 2*d> inputBounds);
 
-    template<typename SpacetimeT, typename RegionT>
-    Sprinkler<d, SpacetimeT, RegionT> getSprinkler(
-        SpacetimeT spacetime,
-        RegionT region,
-        RectangularRegion<d> enclosure)
-    {
-        return buildSprinkler(spacetime, region, enclosure);
-    }
-
-    template<typename SpacetimeT, typename RegionT>
-    Sprinkler<d, SpacetimeT, RegionT> getSprinkler();
+    Sprinkler<d> getSprinkler();
 
 private:
-    template<typename SpacetimeT, typename RegionT>
-    Sprinkler<d, SpacetimeT, RegionT> buildSprinkler(SpacetimeT, RegionT, RectangularRegion<d>);
-
     std::function<std::optional<Event<d>>(Region<d> *, RectangularRegion<d> &)> selectSpacetimeSprinkleFunc();
     std::function<std::optional<Event<d>>()> selectSprinklerSprinkleFunc(std::function<std::optional<Event<d>>(Region<d> *,RectangularRegion<d> &)>);
     std::function<CausalRelation(const Event<d> &, const Event<d> &)> selectCausalFunction();
@@ -120,22 +107,6 @@ private:
     ActiveEncloser currentEncloser = ActiveEncloser::None;
     std::variant<RectangularRegion<d>> enclosure = RectangularRegion<d>({});
 };
-
-//---------------------------------------------------------------------------------------------------------------------
-
-template<int d>
-template<typename SpacetimeT, typename RegionT>
-Sprinkler<d, SpacetimeT, RegionT> SprinklerBuilder<d>::buildSprinkler(
-    SpacetimeT spacetime,
-    RegionT region,
-    RectangularRegion<d> enclosure)
-{
-    Sprinkler<d, SpacetimeT, RegionT> sprinkler;
-    sprinkler.setSpacetime(spacetime);
-    sprinkler.setRegion(region);
-    sprinkler.setEnclosingRegion(enclosure);
-    return sprinkler;
-}
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -456,8 +427,7 @@ std::function<CausalRelation(const Event<d> &, const Event<d> &)> SprinklerBuild
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-template<typename SpacetimeT, typename RegionT>
-Sprinkler<d, SpacetimeT, RegionT> SprinklerBuilder<d>::getSprinkler()
+Sprinkler<d> SprinklerBuilder<d>::getSprinkler()
 {
     if (currentSpacetime == ActiveSpacetime::None || currentRegion == ActiveRegion::None || currentEncloser == ActiveEncloser::None)
     {
@@ -469,5 +439,5 @@ Sprinkler<d, SpacetimeT, RegionT> SprinklerBuilder<d>::getSprinkler()
     auto fullSprinkleFunc = selectSpacetimeSprinkleFunc();
     auto sprinkleFunc = selectSprinklerSprinkleFunc(fullSprinkleFunc);
     auto causalFunc = selectCausalFunction();
-    return Sprinkler<d, SpacetimeT, RegionT>(sprinkleFunc, causalFunc);
+    return Sprinkler<d>(sprinkleFunc, causalFunc);
 }
