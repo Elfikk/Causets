@@ -19,9 +19,9 @@ int main(int argc, char * argv[])
     const auto d = 2;
     auto builder = SprinklerBuilder<d>();
     const auto R0 = 0.01;
-    // auto spacetime = builder.buildAds(R0);
+    builder.buildAds(R0);
     // auto spacetime = builder.buildMinkowski();
-    auto spacetime = builder.buildDeSitter({-0.45 * PI, 0.45 * PI, R0, 0.45 * PI + R0});
+    // auto spacetime = builder.buildDeSitter({-0.45 * PI, 0.45 * PI, R0, 0.45 * PI + R0});
 
     std::cout << "Made Spacetime\n";
 
@@ -30,15 +30,15 @@ int main(int argc, char * argv[])
 
     // std::array<long double, 2> extension({R0, 2 + R0});
 
-    auto region = builder.buildCausalRegion(bottom, top);
+    builder.buildCausalRegion(bottom, top);
     // auto region = builder.buildExtendedCausalRegion(bottom, top, extension, 1);
 
     // auto region = builder.buildRectangularRegion({-0.45 * PI, 0.45 * PI, - PI, PI});
 
     // auto r = 1.0;
     // auto L = 1.0;
-    // auto cylinderCentre = Event<d>({0, R0 + r, 0});
-    // auto sphereCentre = Event<d>({0, 0, 0});
+    // auto cylinderCentre = Event<d>({0, R0 + r});
+    // auto sphereCentre = Event<d>({0, R0 + 0.5 * r});
 
     // auto region = builder.buildCylinderRegion(0, cylinderCentre, L, r);
     // auto region = builder.buildSphericalRegion(sphereCentre, r);
@@ -50,26 +50,23 @@ int main(int argc, char * argv[])
     // std::array<long double, 2 * d> bounds({-r, r, R0, R0 + 2*r, -r, r});
     // std::array<long double, 2*d> bounds({-r, r, -r, r, -r, r});
 
-    auto enclosure = builder.buildRectangularEnclosure(bounds);
+    builder.buildRectangularEnclosure(bounds);
     std::cout << "Made Enclosure\n";
 
-    auto sprinkler = builder.getSprinkler(spacetime, region, enclosure);
+    auto sprinkler = builder.getSprinkler();
     // std::cout << "Got Sprinkler\n";
 
-    if (sprinkler.canSprinkle())
-    {
-        std::cout << "Values good!\n";
-        auto sprinkle = sprinkler.sprinkle(1000);
-        std::cout << "Sprinkled.";
-        CausalUtils::dumpSprinkleCsv(sprinkle, "/mnt/c/Projekty/Coding/C++/Sprinkling/data/refactor/test_ds_half_2_1000.csv");
+    std::cout << "Values good!\n";
+    auto sprinkle = sprinkler.sprinkle(1000);
+    std::cout << "Sprinkled.";
+    CausalUtils::dumpSprinkleCsv(sprinkle, "/mnt/c/Projekty/Coding/C++/Sprinkling/data/refactor/test_ds_half_2_1000.csv");
 
-        auto graph = sprinkle.generateCausalSet();
+    auto graph = sprinkle.generateCausalSet();
 
-        GraphUtils::dumpDagToCsv(graph, "/mnt/c/Projekty/Coding/C++/Sprinkling/data/refactor/dag_ds_half_2_1000.csv");
+    GraphUtils::dumpDagToCsv(graph, "/mnt/c/Projekty/Coding/C++/Sprinkling/data/refactor/dag_ds_half_2_1000.csv");
 
-        auto longestPath = graph.findLongestPath();
-        GraphUtils::dumpDagLongestPathToCsv(longestPath, "/mnt/c/Projekty/Coding/C++/Sprinkling/data/refactor/path_ds_half_2_1000.csv");
-    }
+    auto longestPath = graph.findLongestPath();
+    GraphUtils::dumpDagLongestPathToCsv(longestPath, "/mnt/c/Projekty/Coding/C++/Sprinkling/data/refactor/path_ds_half_2_1000.csv");
 
     return 0;
 }
