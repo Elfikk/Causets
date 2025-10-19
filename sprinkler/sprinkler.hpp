@@ -12,7 +12,6 @@
 
 #include <functional>
 #include <iostream>
-#include <optional>
 #include <memory>
 
 template<int d>
@@ -24,7 +23,6 @@ template<int d>
 class Sprinkler
 {
 public:
-    Sprinkler() {}
     Sprinkler(
         std::function<std::optional<Event<d>>()> sprinkleFunc,
         std::function<CausalRelation(const Event<d> &, const Event<d> &)> relationFunc
@@ -34,13 +32,11 @@ public:
     relationFunction(relationFunc)
     {};
 
-    bool canSprinkle() { return (sprinkleFunction.has_value() && relationFunction.has_value()); }
-
     Sprinkle<d> sprinkle(int points);
 
 private:
-    std::optional<std::function<std::optional<Event<d>>()>> sprinkleFunction = std::nullopt;
-    std::optional<std::function<CausalRelation(const Event<d> &, const Event<d> &)>> relationFunction = std::nullopt;
+    std::function<std::optional<Event<d>>()> sprinkleFunction;
+    std::function<CausalRelation(const Event<d> &, const Event<d> &)> relationFunction;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -48,24 +44,12 @@ private:
 template<int d>
 Sprinkle<d> Sprinkler<d>::sprinkle(const int points)
 {
-    auto callback = [this](const Event<d> & a, const Event<d> & b)
-    {
-        if (relationFunction.has_value())
-        {
-            return relationFunction.value()(a, b);
-        }
-        std::__throw_runtime_error("Sprinkler built with no way to find relations.");
-    };
-    Sprinkle<d> sprinkle(callback);
+    Sprinkle<d> sprinkle(relationFunction);
     int generatedPoints = 0;
 
     while (generatedPoints < points)
     {
-        std::optional<Event<d>> potentialPoint = std::nullopt;
-        if (sprinkleFunction.has_value())
-        {
-            potentialPoint = sprinkleFunction.value()();
-        }
+        auto potentialPoint = sprinkleFunction();
         if (potentialPoint.has_value())
         {
             generatedPoints++;
