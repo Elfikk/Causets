@@ -61,11 +61,15 @@ public:
 
 private:
     std::function<std::optional<Event<d>>(Region<d> *, RectangularRegion<d> &)> selectSpacetimeSprinkleFunc();
-    std::function<std::optional<Event<d>>()> selectSprinklerSprinkleFunc(std::function<std::optional<Event<d>>(Region<d> *,RectangularRegion<d> &)>);
+    std::function<std::optional<Event<d>>()> selectSprinklerSprinkleFunc(
+        std::function<std::optional<Event<d>>(Region<d> *,RectangularRegion<d> &)>
+    );
     std::function<CausalRelation(const Event<d> &, const Event<d> &)> selectCausalFunction();
 
     template<typename RegionT>
-    std::function<std::optional<Event<d>>()> buildSprinkleFunction(std::function<std::optional<Event<d>>(Region<d> *,RectangularRegion<d> &)>);
+    std::function<std::optional<Event<d>>()> buildSprinkleFunction(
+        std::function<std::optional<Event<d>>(Region<d> *,RectangularRegion<d> &)>
+    );
 
     template<typename SpacetimeT>
     CausalRegion<d-1> buildCausalRegion(const Event<d-1> &, const Event<d-1> &, SpacetimeT);
@@ -224,7 +228,11 @@ void SprinklerBuilder<d>::buildExtendedCausalRegion(
             }
             else
             {
-                causalRegion = buildCausalRegion(reducedBottomEvent, reducedTopEvent, AdS<d-1>(std::get<AdS<d>>(spacetime).getR0()));
+                causalRegion = buildCausalRegion(
+                    reducedBottomEvent,
+                    reducedTopEvent,
+                    AdS<d-1>(std::get<AdS<d>>(spacetime).getR0())
+                );
             }
             break;
         }
