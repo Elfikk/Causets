@@ -3,6 +3,8 @@
 #include "graphs/directed_graph.hpp"
 
 #include <algorithm>
+#include <functional>
+#include <optional>
 #include <vector>
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -12,6 +14,7 @@ class Sprinkle
 {
 public:
     Sprinkle(const SpacetimeT & incomingSpacetime) : spacetime(incomingSpacetime) {}
+    Sprinkle(std::function<CausalRelation(const Event<d> &, const Event<d> &)> func) : causalRelationFunc(func) {}
     void addEvent(Event<d> & event) { events.emplace_back(event); }
 
     // Do I want the entire class templated on the Spacetime?
@@ -23,7 +26,8 @@ public:
 
 private:
     std::vector<Event<d>> events;
-    const SpacetimeT & spacetime;
+    std::optional<const SpacetimeT> spacetime = std::nullopt;
+    std::optional<std::function<CausalRelation(const Event<d> &, const Event<d> &)>> causalRelationFunc = std::nullopt;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -44,7 +48,15 @@ DirectedGraph Sprinkle<d, SpacetimeT>::generateCausalSet()
     {
         for (std::size_t j = i + 1; j < events.size(); j++)
         {
-            auto relation = spacetime.causalRelation(events[i], events[j]);
+            auto relation = CausalRelation::CausalFuture;
+            if (causalRelationFunc.has_value())
+            {
+                relation = causalRelationFunc.value()(events[i], events[j]);
+            }
+            else
+            {
+                relation = spacetime->causalRelation(events[i], events[j]);
+            }
             if (relation == CausalRelation::CausalFuture)
             {
                 graph.addEdge(i, j);
