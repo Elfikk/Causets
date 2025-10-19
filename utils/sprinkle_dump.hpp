@@ -27,8 +27,8 @@ void dumpEventCsv(std::ofstream & stream, const Event<d> & event)
 //---------------------------------------------------------------------------------------------------------------------
 
 // Function For Dumping a Sprinkle to a CSV
-template<int d, typename SpacetimeT>
-void dumpSprinkleCsv(Sprinkle<d, SpacetimeT> & sprinkle, const std::string filename)
+template<int d>
+void dumpSprinkleCsv(Sprinkle<d> & sprinkle, const std::string filename)
 {
     auto events = sprinkle.getEvents();
     std::ofstream dumpFile(filename);

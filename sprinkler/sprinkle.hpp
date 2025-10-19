@@ -9,11 +9,10 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-template<int d, typename SpacetimeT>
+template<int d>
 class Sprinkle
 {
 public:
-    Sprinkle(const SpacetimeT & incomingSpacetime) : spacetime(incomingSpacetime) {}
     Sprinkle(std::function<CausalRelation(const Event<d> &, const Event<d> &)> func) : causalRelationFunc(func) {}
     void addEvent(Event<d> & event) { events.emplace_back(event); }
 
@@ -26,14 +25,13 @@ public:
 
 private:
     std::vector<Event<d>> events;
-    std::optional<const SpacetimeT> spacetime = std::nullopt;
-    std::optional<std::function<CausalRelation(const Event<d> &, const Event<d> &)>> causalRelationFunc = std::nullopt;
+    std::function<CausalRelation(const Event<d> &, const Event<d> &)> causalRelationFunc;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
 
-template<int d, typename SpacetimeT>
-DirectedGraph Sprinkle<d, SpacetimeT>::generateCausalSet()
+template<int d>
+DirectedGraph Sprinkle<d>::generateCausalSet()
 {
     // Sort the events by time within the vector
     std::sort(
@@ -48,15 +46,7 @@ DirectedGraph Sprinkle<d, SpacetimeT>::generateCausalSet()
     {
         for (std::size_t j = i + 1; j < events.size(); j++)
         {
-            auto relation = CausalRelation::CausalFuture;
-            if (causalRelationFunc.has_value())
-            {
-                relation = causalRelationFunc.value()(events[i], events[j]);
-            }
-            else
-            {
-                relation = spacetime->causalRelation(events[i], events[j]);
-            }
+            auto relation = causalRelationFunc(events[i], events[j]);
             if (relation == CausalRelation::CausalFuture)
             {
                 graph.addEdge(i, j);

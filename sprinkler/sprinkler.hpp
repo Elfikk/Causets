@@ -15,7 +15,7 @@
 #include <optional>
 #include <memory>
 
-template<int d, typename SpacetimeT>
+template<int d>
 class Sprinkle;
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ public:
 
     bool canSprinkle() { return spacetime.has_value() && region.has_value() && enclosingRegion.has_value(); }
 
-    Sprinkle<d, SpacetimeT> sprinkle(int points);
+    Sprinkle<d> sprinkle(int points);
 
     void setSpacetime(SpacetimeT newSpacetime) { spacetime = newSpacetime; };
     void setRegion(RegionT newRegion) { region = newRegion; }
@@ -54,7 +54,7 @@ private:
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d, typename SpacetimeT, typename RegionT>
-Sprinkle<d, SpacetimeT> Sprinkler<d, SpacetimeT, RegionT>::sprinkle(const int points)
+Sprinkle<d> Sprinkler<d, SpacetimeT, RegionT>::sprinkle(const int points)
 {
     auto callback = [this](const Event<d> & a, const Event<d> & b)
     {
@@ -68,7 +68,7 @@ Sprinkle<d, SpacetimeT> Sprinkler<d, SpacetimeT, RegionT>::sprinkle(const int po
         }
         std::__throw_runtime_error("Sprinkler built with no way to find relations.");
     };
-    Sprinkle<d, SpacetimeT> sprinkle(callback);
+    Sprinkle<d> sprinkle(callback);
     int generatedPoints = 0;
 
     while (generatedPoints < points)
