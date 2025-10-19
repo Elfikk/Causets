@@ -348,6 +348,7 @@ std::function<std::optional<Event<d>>(Region<d> *,RectangularRegion<d> &)> Sprin
             std::__throw_runtime_error("Uninitialised spacetime whilst selecting sprinkle function.");
         }
     }
+    return [](Region<d> *,RectangularRegion<d> &){ return std::nullopt; };
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -384,6 +385,7 @@ std::function<std::optional<Event<d>>()> SprinklerBuilder<d>::selectSprinklerSpr
             std::__throw_runtime_error("Unitialised region when making reduced sprinkle function.");
         }
     }
+    return [](){ return std::nullopt; };
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -413,6 +415,7 @@ std::function<CausalRelation(const Event<d> &, const Event<d> &)> SprinklerBuild
             std::__throw_runtime_error("Uninitialised spacetime whilst selecting causal function.");
         }
     }
+    return [](const Event<d> &, const Event<d> &) { return CausalRelation::CausalFuture; };
 }
 
 //---------------------------------------------------------------------------------------------------------------------
