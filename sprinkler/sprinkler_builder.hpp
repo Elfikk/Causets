@@ -18,6 +18,7 @@
 #include <functional>
 #include <optional>
 #include <memory>
+#include <variant>
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -79,6 +80,8 @@ private:
         None
     };
     ActiveSpacetime currentSpacetime = ActiveSpacetime::None;
+    // Is there a different way to make the variant not complain about not being initialised?
+    std::variant<AdS<d>, DeSitter<d>, Minkowski<d>> spacetime = Minkowski<d>();
 
     enum class ActiveRegion
     {
@@ -97,10 +100,6 @@ private:
         None
     };
     ActiveEncloser currentEncloser = ActiveEncloser::None;
-
-    std::optional<Minkowski<d>> minkowski = std::nullopt;
-    std::optional<AdS<d>> ads = std::nullopt;
-    std::optional<DeSitter<d>> deSitter = std::nullopt;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -124,13 +123,11 @@ Sprinkler<d, SpacetimeT, RegionT> SprinklerBuilder<d>::buildSprinkler(
 template<int d>
 Minkowski<d> SprinklerBuilder<d>::buildMinkowski()
 {
-    ads = std::nullopt;
-    deSitter = std::nullopt;
-    minkowski = Minkowski<d>();
+    spacetime = Minkowski<d>();
     currentSpacetime = ActiveSpacetime::Minkowski;
     currentRegion = ActiveRegion::None;
     currentEncloser = ActiveEncloser::None;
-    return minkowski.value();
+    return std::get<Minkowski<d>>(spacetime);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -138,13 +135,11 @@ Minkowski<d> SprinklerBuilder<d>::buildMinkowski()
 template<int d>
 AdS<d> SprinklerBuilder<d>::buildAds(long double R0)
 {
-    minkowski = std::nullopt;
-    deSitter = std::nullopt;
-    ads = AdS<d>(R0);
+    spacetime = AdS<d>(R0);
     currentSpacetime = ActiveSpacetime::AdS;
     currentRegion = ActiveRegion::None;
     currentEncloser = ActiveEncloser::None;
-    return ads.value();
+    return std::get<AdS<d>>(spacetime);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -152,13 +147,11 @@ AdS<d> SprinklerBuilder<d>::buildAds(long double R0)
 template<int d>
 DeSitter<d> SprinklerBuilder<d>::buildDeSitter(std::array<long double, 2 * d> boundaries)
 {
-    minkowski = std::nullopt;
-    ads = std::nullopt;
-    deSitter = DeSitter<d>(boundaries);
+    spacetime = DeSitter<d>(boundaries);
     currentSpacetime = ActiveSpacetime::DeSitter;
     currentRegion = ActiveRegion::None;
     currentEncloser = ActiveEncloser::None;
-    return deSitter.value();
+    return std::get<DeSitter<d>>(spacetime);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -171,21 +164,21 @@ CausalRegion<d> SprinklerBuilder<d>::buildCausalRegion(const Event<d> & bottom, 
         currentRegion = ActiveRegion::Causal;
         currentEncloser = ActiveEncloser::None;
     }
-    if (minkowski.has_value())
+    if (currentSpacetime == ActiveSpacetime::Minkowski)
     {
-        auto causalFunc = CausalUtils::isInCausalRegion<d>(minkowski.value(), bottom, top);
+        auto causalFunc = CausalUtils::isInCausalRegion<d>(std::get<Minkowski<d>>(spacetime), bottom, top);
         auto causalRegion = CausalRegion<d>(causalFunc);
         return causalRegion;
     }
-    else if (ads.has_value())
+    else if (currentSpacetime == ActiveSpacetime::AdS)
     {
-        auto causalFunc = CausalUtils::isInCausalRegion<d>(ads.value(), bottom, top);
+        auto causalFunc = CausalUtils::isInCausalRegion<d>(std::get<AdS<d>>(spacetime), bottom, top);
         auto causalRegion = CausalRegion<d>(causalFunc);
         return causalRegion;
     }
-    else if (deSitter.has_value())
+    else if (currentSpacetime == ActiveSpacetime::DeSitter)
     {
-        auto causalFunc = CausalUtils::isInCausalRegion<d>(deSitter.value(), bottom, top);
+        auto causalFunc = CausalUtils::isInCausalRegion<d>(std::get<DeSitter<d>>(spacetime), bottom, top);
         auto causalRegion = CausalRegion<d>(causalFunc);
         return causalRegion;
     }
@@ -241,7 +234,7 @@ ExtendedCausalRegion<d> SprinklerBuilder<d>::buildExtendedCausalRegion(
         currentRegion = ActiveRegion::ExtendedCausal;
         currentEncloser = ActiveEncloser::None;
     }
-    if (ads.has_value())
+    if (currentSpacetime == ActiveSpacetime::AdS)
     {
         if (extension_axis == 1)
         {
@@ -249,10 +242,10 @@ ExtendedCausalRegion<d> SprinklerBuilder<d>::buildExtendedCausalRegion(
         }
         else
         {
-            causalRegion = buildCausalRegion(reducedBottomEvent, reducedTopEvent, AdS<d-1>(ads->getR0()));
+            causalRegion = buildCausalRegion(reducedBottomEvent, reducedTopEvent, AdS<d-1>(std::get<AdS<d>>(spacetime).getR0()));
         }
     }
-    else if (minkowski.has_value())
+    else if (currentSpacetime == ActiveSpacetime::Minkowski)
     {
         causalRegion = buildCausalRegion(reducedBottomEvent, reducedTopEvent, Minkowski<d-1>());
     }
