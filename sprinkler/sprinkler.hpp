@@ -25,7 +25,14 @@ class Sprinkler
 {
 public:
     Sprinkler() {}
-    Sprinkler(std::function<std::optional<Event<d>>()> func) : sprinkleFunction(func) {};
+    Sprinkler(
+        std::function<std::optional<Event<d>>()> sprinkleFunc,
+        std::function<CausalRelation(const Event<d> &, const Event<d> &)> relationFunc
+    )
+    :
+    sprinkleFunction(sprinkleFunc),
+    relationFunction(relationFunc)
+    {};
 
     bool canSprinkle() { return spacetime.has_value() && region.has_value() && enclosingRegion.has_value(); }
 
@@ -41,6 +48,7 @@ private:
     std::optional<RectangularRegion<d>> enclosingRegion = std::nullopt;
 
     std::optional<std::function<std::optional<Event<d>>()>> sprinkleFunction = std::nullopt;
+    std::optional<std::function<CausalRelation(const Event<d> &, const Event<d> &)>> relationFunction = std::nullopt;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -48,7 +56,19 @@ private:
 template<int d, typename SpacetimeT, typename RegionT>
 Sprinkle<d, SpacetimeT> Sprinkler<d, SpacetimeT, RegionT>::sprinkle(const int points)
 {
-    Sprinkle<d, SpacetimeT> sprinkle(spacetime.value());
+    auto callback = [this](const Event<d> & a, const Event<d> & b)
+    {
+        if (spacetime.has_value())
+        {
+            return spacetime->causalRelation(a,b);
+        }
+        else if (relationFunction.has_value())
+        {
+            return relationFunction.value()(a, b);
+        }
+        std::__throw_runtime_error("Sprinkler built with no way to find relations.");
+    };
+    Sprinkle<d, SpacetimeT> sprinkle(callback);
     int generatedPoints = 0;
 
     while (generatedPoints < points)
