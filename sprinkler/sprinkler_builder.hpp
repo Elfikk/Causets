@@ -93,6 +93,13 @@ private:
         None
     };
     ActiveRegion currentRegion = ActiveRegion::None;
+    std::variant<
+        CausalRegion<d>,
+        CylindricalRegion<d>,
+        ExtendedCausalRegion<d>,
+        RectangularRegion<d>,
+        SphericalRegion<d>
+    > region = RectangularRegion<d>({});
 
     enum class ActiveEncloser
     {
@@ -159,33 +166,33 @@ DeSitter<d> SprinklerBuilder<d>::buildDeSitter(std::array<long double, 2 * d> bo
 template<int d>
 CausalRegion<d> SprinklerBuilder<d>::buildCausalRegion(const Event<d> & bottom, const Event<d> & top)
 {
-    if (currentSpacetime != ActiveSpacetime::None)
+    std::function<bool(const Event<d>&)> causalFunc = [](const Event<d>&){ return true; };
+    switch (currentSpacetime)
     {
-        currentRegion = ActiveRegion::Causal;
-        currentEncloser = ActiveEncloser::None;
+        case ActiveSpacetime::Minkowski:
+        {
+            causalFunc = CausalUtils::isInCausalRegion<d>(std::get<Minkowski<d>>(spacetime), bottom, top);
+            break;
+        }
+        case ActiveSpacetime::AdS:
+        {
+            causalFunc = CausalUtils::isInCausalRegion<d>(std::get<AdS<d>>(spacetime), bottom, top);
+            break;
+        }
+        case ActiveSpacetime::DeSitter:
+        {
+            causalFunc = CausalUtils::isInCausalRegion<d>(std::get<DeSitter<d>>(spacetime), bottom, top);
+            break;
+        }
+        case ActiveSpacetime::None:
+        {
+            std::__throw_runtime_error("Tried to build a region without specifying a spacetime first.");
+        }
     }
-    if (currentSpacetime == ActiveSpacetime::Minkowski)
-    {
-        auto causalFunc = CausalUtils::isInCausalRegion<d>(std::get<Minkowski<d>>(spacetime), bottom, top);
-        auto causalRegion = CausalRegion<d>(causalFunc);
-        return causalRegion;
-    }
-    else if (currentSpacetime == ActiveSpacetime::AdS)
-    {
-        auto causalFunc = CausalUtils::isInCausalRegion<d>(std::get<AdS<d>>(spacetime), bottom, top);
-        auto causalRegion = CausalRegion<d>(causalFunc);
-        return causalRegion;
-    }
-    else if (currentSpacetime == ActiveSpacetime::DeSitter)
-    {
-        auto causalFunc = CausalUtils::isInCausalRegion<d>(std::get<DeSitter<d>>(spacetime), bottom, top);
-        auto causalRegion = CausalRegion<d>(causalFunc);
-        return causalRegion;
-    }
-    else
-    {
-        std::__throw_runtime_error("Tried to build a region without specifying a spacetime first.");
-    }
+    region = CausalRegion<d>(causalFunc);
+    currentRegion = ActiveRegion::Causal;
+    currentEncloser = ActiveEncloser::None;
+    return std::get<CausalRegion<d>>(region);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -228,29 +235,39 @@ ExtendedCausalRegion<d> SprinklerBuilder<d>::buildExtendedCausalRegion(
     Event<d-1> reducedTopEvent(reducedTop);
 
     CausalRegion<d-1> causalRegion([](const Event<d-1> &){ return true; });
-
-    if ((currentSpacetime != ActiveSpacetime::None) && (currentSpacetime != ActiveSpacetime::DeSitter))
+    switch (currentSpacetime)
     {
-        currentRegion = ActiveRegion::ExtendedCausal;
-        currentEncloser = ActiveEncloser::None;
-    }
-    if (currentSpacetime == ActiveSpacetime::AdS)
-    {
-        if (extension_axis == 1)
+        case ActiveSpacetime::AdS:
+        {
+            if (extension_axis == 1)
+            {
+                causalRegion = buildCausalRegion(reducedBottomEvent, reducedTopEvent, Minkowski<d-1>());
+            }
+            else
+            {
+                causalRegion = buildCausalRegion(reducedBottomEvent, reducedTopEvent, AdS<d-1>(std::get<AdS<d>>(spacetime).getR0()));
+            }
+            break;
+        }
+        case ActiveSpacetime::Minkowski:
         {
             causalRegion = buildCausalRegion(reducedBottomEvent, reducedTopEvent, Minkowski<d-1>());
+            break;
         }
-        else
+        case ActiveSpacetime::DeSitter:
         {
-            causalRegion = buildCausalRegion(reducedBottomEvent, reducedTopEvent, AdS<d-1>(std::get<AdS<d>>(spacetime).getR0()));
+            std::__throw_runtime_error("De Sitter does not have an ECR implementation.");
+            break;
+        }
+        case ActiveSpacetime::None:
+        {
+            std::__throw_runtime_error("Need a spacetime to build a region.");
         }
     }
-    else if (currentSpacetime == ActiveSpacetime::Minkowski)
-    {
-        causalRegion = buildCausalRegion(reducedBottomEvent, reducedTopEvent, Minkowski<d-1>());
-    }
-
-    return ExtendedCausalRegion<d>(causalRegion, extension, extension_axis);
+    currentRegion = ActiveRegion::ExtendedCausal;
+    currentEncloser = ActiveEncloser::None;
+    region = ExtendedCausalRegion<d>(causalRegion, extension, extension_axis);
+    return std::get<ExtendedCausalRegion<d>>(region);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -269,7 +286,8 @@ CylindricalRegion<d> SprinklerBuilder<d>::buildCylinderRegion(
     }
     currentRegion = ActiveRegion::Cylindrical;
     currentEncloser = ActiveEncloser::None;
-    return CylindricalRegion<d>(axis, cylinderCentre, cylinderLength, cylinderRadius);
+    region = CylindricalRegion<d>(axis, cylinderCentre, cylinderLength, cylinderRadius);
+    return std::get<CylindricalRegion<d>>(region);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -284,7 +302,8 @@ RectangularRegion<d> SprinklerBuilder<d>::buildRectangularRegion(std::array<long
     }
     currentRegion = ActiveRegion::Rectangular;
     currentEncloser = ActiveEncloser::None;
-    return RectangularRegion<d>(inputBounds);
+    region = RectangularRegion<d>(inputBounds);
+    return std::get<RectangularRegion<d>>(region);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -298,7 +317,8 @@ SphericalRegion<d> SprinklerBuilder<d>::buildSphericalRegion(const Event<d> & sp
     }
     currentRegion = ActiveRegion::Spherical;
     currentEncloser = ActiveEncloser::None;
-    return SphericalRegion<d>(sphereCentre, R);
+    region = SphericalRegion<d>(sphereCentre, R);
+    return std::get<SphericalRegion<d>>(region);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
