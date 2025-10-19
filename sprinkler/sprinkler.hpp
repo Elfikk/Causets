@@ -34,7 +34,7 @@ public:
     relationFunction(relationFunc)
     {};
 
-    bool canSprinkle() { return spacetime.has_value() && region.has_value() && enclosingRegion.has_value(); }
+    bool canSprinkle() { return (sprinkleFunction.has_value() && relationFunction.has_value()) || (spacetime.has_value() && region.has_value() && enclosingRegion.has_value()); }
 
     Sprinkle<d> sprinkle(int points);
 
