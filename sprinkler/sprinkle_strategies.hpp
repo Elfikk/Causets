@@ -76,6 +76,17 @@ std::optional<Event<d>> doSprinkleEvent(
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
+std::optional<Event<d>> minkowskiEventSprinkle(
+    Region<d> * sprinkleRegion,
+    RectangularRegion<d> & enclosingRegion
+)
+{
+    return doSprinkleEvent(sprinkleRegion, enclosingRegion, minkowski_spacetime());
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
 std::optional<Event<d>> doSprinkleEvent(
     Region<d> * sprinkleRegion,
     RectangularRegion<d> & enclosingRegion,
@@ -114,6 +125,17 @@ std::optional<Event<d>> doSprinkleEvent(
 
 //---------------------------------------------------------------------------------------------------------------------
 
+template<int d>
+std::optional<Event<d>> adsEventSprinkle(
+    Region<d> * sprinkleRegion,
+    RectangularRegion<d> & enclosingRegion
+)
+{
+    return doSprinkleEvent(sprinkleRegion, enclosingRegion, ads_spacetime());
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 std::optional<Event<2>> doSprinkleEvent(
     Region<2> * sprinkleRegion,
     RectangularRegion<2> & enclosingRegion,
@@ -130,6 +152,16 @@ std::optional<Event<2>> doSprinkleEvent(
     coords[0] = atan((2 * randomNums[0] - 1) * tan(enclosingRegion.getUpperBound(0)));
     Event<2> event(coords);
     return sprinkleRegion->isInside(event) ? std::optional(event) : std::nullopt;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+std::optional<Event<2>> deSitterEventSprinkle(
+    Region<2> * sprinkleRegion,
+    RectangularRegion<2> & enclosingRegion
+)
+{
+    return doSprinkleEvent(sprinkleRegion, enclosingRegion, de_sitter_spacetime());
 }
 
 //---------------------------------------------------------------------------------------------------------------------
