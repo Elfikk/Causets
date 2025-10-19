@@ -11,6 +11,7 @@
 #include "regions/spherical.hpp"
 
 #include "spacetimes/ads.hpp"
+#include "spacetimes/de_sitter.hpp"
 #include "spacetimes/minkowski.hpp"
 
 #include "utils/causal_functions.hpp"
