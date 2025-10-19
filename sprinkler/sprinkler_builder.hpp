@@ -66,9 +66,19 @@ public:
         return buildSprinkler(spacetime, region, enclosure);
     }
 
+    template<typename SpacetimeT, typename RegionT>
+    Sprinkler<d, SpacetimeT, RegionT> getSprinkler();
+
 private:
     template<typename SpacetimeT, typename RegionT>
     Sprinkler<d, SpacetimeT, RegionT> buildSprinkler(SpacetimeT, RegionT, RectangularRegion<d>);
+
+    std::function<std::optional<Event<d>>(Region<d> *, RectangularRegion<d> &)> selectSpacetimeSprinkleFunc();
+    std::function<std::optional<Event<d>>()> selectSprinklerSprinkleFunc(std::function<std::optional<Event<d>>(Region<d> *,RectangularRegion<d> &)>);
+    std::function<CausalRelation(const Event<d> &, const Event<d> &)> selectCausalFunction();
+
+    template<typename RegionT>
+    std::function<std::optional<Event<d>>()> buildSprinkleFunction(std::function<std::optional<Event<d>>(Region<d> *,RectangularRegion<d> &)>);
 
     template<typename SpacetimeT>
     CausalRegion<d-1> buildCausalRegion(const Event<d-1> &, const Event<d-1> &, SpacetimeT);
@@ -335,4 +345,129 @@ RectangularRegion<d> SprinklerBuilder<d>::buildRectangularEnclosure(std::array<l
     currentEncloser = ActiveEncloser::Rectangular;
     enclosure = RectangularRegion<d>(inputBounds);
     return std::get<RectangularRegion<d>>(enclosure);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+template<typename RegionT>
+std::function<std::optional<Event<d>>()> SprinklerBuilder<d>::buildSprinkleFunction(
+    std::function<std::optional<Event<d>>(Region<d> *,RectangularRegion<d> &)> func
+)
+{
+    return [this, func](){ return func(&std::get<RegionT>(region), std::get<RectangularRegion<d>>(enclosure)); };
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+std::function<std::optional<Event<d>>(Region<d> *,RectangularRegion<d> &)> SprinklerBuilder<d>::selectSpacetimeSprinkleFunc()
+{
+    switch (currentSpacetime)
+    {
+        case ActiveSpacetime::Minkowski:
+        {
+            return SprinkleStrategy::minkowskiEventSprinkle<d>;
+        }
+        case ActiveSpacetime::AdS:
+        {
+            return SprinkleStrategy::adsEventSprinkle<d>;
+        }
+        case ActiveSpacetime::DeSitter:
+        {
+            if (d != 2)
+            {
+                std::__throw_runtime_error("De Sitter Only Implemented for d=2.");
+            }
+            return SprinkleStrategy::deSitterEventSprinkle;
+        }
+        case ActiveSpacetime::None:
+        {
+            std::__throw_runtime_error("Uninitialised spacetime whilst selecting sprinkle function.");
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+std::function<std::optional<Event<d>>()> SprinklerBuilder<d>::selectSprinklerSprinkleFunc(
+    std::function<std::optional<Event<d>>(Region<d> *,RectangularRegion<d> &)> fullSprinkleFunc
+)
+{
+    switch (currentRegion)
+    {
+        case ActiveRegion::Causal:
+        {
+            return buildSprinkleFunction<CausalRegion<d>>(fullSprinkleFunc);
+        }
+        case ActiveRegion::Cylindrical:
+        {
+            return buildSprinkleFunction<CylindricalRegion<d>>(fullSprinkleFunc);
+        }
+        case ActiveRegion::ExtendedCausal:
+        {
+            return buildSprinkleFunction<ExtendedCausalRegion<d>>(fullSprinkleFunc);
+        }
+        case ActiveRegion::Rectangular:
+        {
+            return buildSprinkleFunction<RectangularRegion<d>>(fullSprinkleFunc);
+        }
+        case ActiveRegion::Spherical:
+        {
+            return buildSprinkleFunction<SphericalRegion<d>>(fullSprinkleFunc);
+        }
+        case ActiveRegion::None:
+        {
+            std::__throw_runtime_error("Unitialised region when making reduced sprinkle function.");
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+std::function<CausalRelation(const Event<d> &, const Event<d> &)> SprinklerBuilder<d>::selectCausalFunction()
+{
+    switch (currentSpacetime)
+    {
+        case ActiveSpacetime::Minkowski:
+        {
+            auto minkowski = std::get<Minkowski<d>>(spacetime);
+            return [minkowski](const Event<d> & a, const Event<d> & b) { return minkowski.causalRelation(a, b); };
+        }
+        case ActiveSpacetime::AdS:
+        {
+            auto ads = std::get<AdS<d>>(spacetime);
+            return [ads](const Event<d> & a, const Event<d> & b) { return ads.causalRelation(a, b); };
+        }
+        case ActiveSpacetime::DeSitter:
+        {
+            auto deSitter = std::get<DeSitter<d>>(spacetime);
+            return [deSitter](const Event<d> & a, const Event<d> & b) { return deSitter.causalRelation(a, b); };
+        }
+        case ActiveSpacetime::None:
+        {
+            std::__throw_runtime_error("Uninitialised spacetime whilst selecting causal function.");
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+template<typename SpacetimeT, typename RegionT>
+Sprinkler<d, SpacetimeT, RegionT> SprinklerBuilder<d>::getSprinkler()
+{
+    if (currentSpacetime == ActiveSpacetime::None || currentRegion == ActiveRegion::None || currentEncloser == ActiveEncloser::None)
+    {
+        // This is not quite true - the encloser is only necessary as for now we
+        // always rely on sprinkling into a rectangular region.
+        // Should have really called it a hypercubic region shouldn't have I?
+        std::__throw_runtime_error("Cannot sprinkle without a spacetime, region and enclosing region not defined.");
+    }
+    auto fullSprinkleFunc = selectSpacetimeSprinkleFunc();
+    auto sprinkleFunc = selectSprinklerSprinkleFunc(fullSprinkleFunc);
+    auto causalFunc = selectCausalFunction();
+    return Sprinkler<d, SpacetimeT, RegionT>(sprinkleFunc, causalFunc);
 }
