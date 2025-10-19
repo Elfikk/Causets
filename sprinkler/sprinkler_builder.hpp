@@ -71,6 +71,33 @@ private:
     template<typename SpacetimeT>
     CausalRegion<d-1> buildCausalRegion(const Event<d-1> &, const Event<d-1> &, SpacetimeT);
 
+    enum class ActiveSpacetime
+    {
+        AdS,
+        DeSitter,
+        Minkowski,
+        None
+    };
+    ActiveSpacetime currentSpacetime = ActiveSpacetime::None;
+
+    enum class ActiveRegion
+    {
+        Causal,
+        Cylindrical,
+        ExtendedCausal,
+        Rectangular,
+        Spherical,
+        None
+    };
+    ActiveRegion currentRegion = ActiveRegion::None;
+
+    enum class ActiveEncloser
+    {
+        Rectangular,
+        None
+    };
+    ActiveEncloser currentEncloser = ActiveEncloser::None;
+
     std::optional<Minkowski<d>> minkowski = std::nullopt;
     std::optional<AdS<d>> ads = std::nullopt;
     std::optional<DeSitter<d>> deSitter = std::nullopt;
@@ -100,6 +127,9 @@ Minkowski<d> SprinklerBuilder<d>::buildMinkowski()
     ads = std::nullopt;
     deSitter = std::nullopt;
     minkowski = Minkowski<d>();
+    currentSpacetime = ActiveSpacetime::Minkowski;
+    currentRegion = ActiveRegion::None;
+    currentEncloser = ActiveEncloser::None;
     return minkowski.value();
 }
 
@@ -111,6 +141,9 @@ AdS<d> SprinklerBuilder<d>::buildAds(long double R0)
     minkowski = std::nullopt;
     deSitter = std::nullopt;
     ads = AdS<d>(R0);
+    currentSpacetime = ActiveSpacetime::AdS;
+    currentRegion = ActiveRegion::None;
+    currentEncloser = ActiveEncloser::None;
     return ads.value();
 }
 
@@ -122,6 +155,9 @@ DeSitter<d> SprinklerBuilder<d>::buildDeSitter(std::array<long double, 2 * d> bo
     minkowski = std::nullopt;
     ads = std::nullopt;
     deSitter = DeSitter<d>(boundaries);
+    currentSpacetime = ActiveSpacetime::DeSitter;
+    currentRegion = ActiveRegion::None;
+    currentEncloser = ActiveEncloser::None;
     return deSitter.value();
 }
 
@@ -130,6 +166,11 @@ DeSitter<d> SprinklerBuilder<d>::buildDeSitter(std::array<long double, 2 * d> bo
 template<int d>
 CausalRegion<d> SprinklerBuilder<d>::buildCausalRegion(const Event<d> & bottom, const Event<d> & top)
 {
+    if (currentSpacetime != ActiveSpacetime::None)
+    {
+        currentRegion = ActiveRegion::Causal;
+        currentEncloser = ActiveEncloser::None;
+    }
     if (minkowski.has_value())
     {
         auto causalFunc = CausalUtils::isInCausalRegion<d>(minkowski.value(), bottom, top);
@@ -194,6 +235,12 @@ ExtendedCausalRegion<d> SprinklerBuilder<d>::buildExtendedCausalRegion(
     Event<d-1> reducedTopEvent(reducedTop);
 
     CausalRegion<d-1> causalRegion([](const Event<d-1> &){ return true; });
+
+    if ((currentSpacetime != ActiveSpacetime::None) && (currentSpacetime != ActiveSpacetime::DeSitter))
+    {
+        currentRegion = ActiveRegion::ExtendedCausal;
+        currentEncloser = ActiveEncloser::None;
+    }
     if (ads.has_value())
     {
         if (extension_axis == 1)
@@ -223,6 +270,8 @@ CylindricalRegion<d> SprinklerBuilder<d>::buildCylinderRegion(
     long double cylinderRadius
 )
 {
+    currentRegion = ActiveRegion::Cylindrical;
+    currentEncloser = ActiveEncloser::None;
     return CylindricalRegion<d>(axis, cylinderCentre, cylinderLength, cylinderRadius);
 }
 
@@ -232,6 +281,8 @@ CylindricalRegion<d> SprinklerBuilder<d>::buildCylinderRegion(
 template<int d>
 RectangularRegion<d> SprinklerBuilder<d>::buildRectangularRegion(std::array<long double, 2*d> inputBounds)
 {
+    currentRegion = ActiveRegion::Rectangular;
+    currentEncloser = ActiveEncloser::None;
     return RectangularRegion<d>(inputBounds);
 }
 
@@ -240,6 +291,8 @@ RectangularRegion<d> SprinklerBuilder<d>::buildRectangularRegion(std::array<long
 template<int d>
 SphericalRegion<d> SprinklerBuilder<d>::buildSphericalRegion(const Event<d> & sphereCentre, long double R)
 {
+    currentRegion = ActiveRegion::Spherical;
+    currentEncloser = ActiveEncloser::None;
     return SphericalRegion<d>(sphereCentre, R);
 }
 
@@ -248,5 +301,6 @@ SphericalRegion<d> SprinklerBuilder<d>::buildSphericalRegion(const Event<d> & sp
 template<int d>
 RectangularRegion<d> SprinklerBuilder<d>::buildRectangularEnclosure(std::array<long double, 2*d> inputBounds)
 {
+    currentEncloser = ActiveEncloser::Rectangular;
     return RectangularRegion<d>(inputBounds);
 }
