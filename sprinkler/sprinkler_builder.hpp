@@ -345,11 +345,11 @@ std::function<std::optional<Event<d>>(Region<d> *,RectangularRegion<d> &)> Sprin
         }
         case ActiveSpacetime::DeSitter:
         {
-            if (d != 2)
+            if (d == 2)
             {
-                std::__throw_runtime_error("De Sitter Only Implemented for d=2.");
+                return SprinkleStrategy::deSitterEventSprinkle<d>;
             }
-            return SprinkleStrategy::deSitterEventSprinkle;
+            std::__throw_runtime_error("De Sitter Only Implemented for d=2.");
         }
         case ActiveSpacetime::None:
         {

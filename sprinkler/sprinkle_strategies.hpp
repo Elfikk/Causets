@@ -156,6 +156,15 @@ std::optional<Event<2>> doSprinkleEvent(
 
 //---------------------------------------------------------------------------------------------------------------------
 
+template<int d>
+std::optional<Event<d>> deSitterEventSprinkle(Region<d> *, RectangularRegion<d> &)
+{
+    return std::nullopt;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<>
 std::optional<Event<2>> deSitterEventSprinkle(
     Region<2> * sprinkleRegion,
     RectangularRegion<2> & enclosingRegion

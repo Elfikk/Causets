@@ -17,7 +17,7 @@ public:
     typedef de_sitter_spacetime spacetime_class;
 
     DeSitter(std::array<long double, 2 * d> boundaries) : bounds(boundaries) {}
-    CausalRelation causalRelation(const Event<d> & a, const Event<d> & b) const override;
+    CausalRelation causalRelation(const Event<d> & a, const Event<d> & b) const override { return CausalRelation::Spacelike; };
     long double getLowerBound(int i) const override { return bounds[2 * i]; }
     long double getUpperBound(int i) const override { return bounds[2 * i + 1]; }
 
