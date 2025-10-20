@@ -70,6 +70,7 @@ void DirectedGraph::addEdge(nodeId from, nodeId to)
     }
 
     destNodes.insert(to);
+    edgeNum += 1;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -94,6 +95,7 @@ void DirectedGraph::removeEdge(nodeId from, nodeId to)
     }
 
     destNodes.erase(to);
+    edgeNum -= 1;
 }
 
 //---------------------------------------------------------------------------------------------------------------------

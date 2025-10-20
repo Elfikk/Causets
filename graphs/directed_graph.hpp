@@ -20,6 +20,7 @@ public:
     void removeEdge(nodeId from, nodeId to);
 
     std::size_t getNumNodes() const { return nodes.size(); }
+    std::size_t getNumEdges() const { return edgeNum; }
 
     std::map<nodeId, std::set<nodeId>> getAdjacencyList() const { return adjacencyList; }
 
@@ -33,4 +34,6 @@ private:
     std::map<nodeId, std::set<nodeId>> adjacencyList;
 
     std::vector<nodeId> topologicalOrder;
+
+    std::size_t edgeNum = 0;
 };
