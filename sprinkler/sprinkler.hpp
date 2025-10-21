@@ -55,7 +55,6 @@ Sprinkle<d> Sprinkler<d>::sprinkle(const int points)
             generatedPoints++;
             sprinkle.addEvent(*potentialPoint);
         }
-        std::cout << "Number of generated points: " << generatedPoints << "\n";
     }
 
     return sprinkle;

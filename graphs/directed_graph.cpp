@@ -1,7 +1,6 @@
 #include "directed_graph.hpp"
 
 #include <algorithm>
-#include <iostream>
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -111,7 +110,6 @@ void DirectedGraph::dfsUtil(nodeId id, std::set<nodeId> & visitedNodes)
         }
     }
     topologicalOrder.push_back(id);
-    // std::cout << "Inserted " << id << " into topological order.\n";
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -128,12 +126,6 @@ void DirectedGraph::findTopologicalOrder()
         }
     }
     std::reverse(topologicalOrder.begin(), topologicalOrder.end());
-
-    std::cout << "\nFinal Topological Order:\n";
-    for (const auto id : topologicalOrder)
-    {
-        std::cout << id << ",";
-    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------

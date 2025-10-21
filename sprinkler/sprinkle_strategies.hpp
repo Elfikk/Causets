@@ -11,7 +11,6 @@
 
 #include <array>
 #include <cmath>
-#include <iostream>
 #include <optional>
 #include <random>
 
@@ -26,13 +25,10 @@ std::array<long double, d> generateRandomNumbers()
     std::random_device rd("/dev/urandom");
     std::uniform_real_distribution<> uniform(0.0, 1.0);
     std::array<long double, d> randomNums;
-    std::cout << "Random Num:\n";
     for (int i = 0; i < d; i++)
     {
         randomNums[i] = uniform(rd);
-        std::cout << randomNums[i] << ",";
     }
-    std::cout << "\n";
     return randomNums;
 }
 
@@ -56,7 +52,6 @@ std::optional<Event<d>> doSprinkleEvent(
     minkowski_spacetime)
 {
     const auto randomNums = SprinkleUtils::generateRandomNumbers<d>();
-    std::cout << "Coordinates:\n";
     std::array<long double, d> coords;
     for (int i = 0; i < d; i++)
     {
@@ -65,9 +60,7 @@ std::optional<Event<d>> doSprinkleEvent(
             enclosingRegion.getLowerBound(i),
             enclosingRegion.getUpperBound(i)
         );
-        std::cout << coords[i] << ",";
     }
-    std::cout << "\n";
 
     Event<d> event(coords);
     return sprinkleRegion->isInside(event) ? std::optional(event) : std::nullopt;
@@ -93,7 +86,6 @@ std::optional<Event<d>> doSprinkleEvent(
     ads_spacetime)
 {
     const auto randomNums = SprinkleUtils::generateRandomNumbers<d>();
-    std::cout << "Coordinates:\n";
     // Now map random numbers to coordinates within enclosing region
     std::array<long double, d> coords;
     const auto R1 = enclosingRegion.getUpperBound(1);
@@ -114,12 +106,9 @@ std::optional<Event<d>> doSprinkleEvent(
         {
             coords[i] = pow(R0_pow - randomNums[i] * (R0_pow - R1_pow), 1.0 / (1.0 - d));
         }
-        std::cout << coords[i] << ",";
     }
-    std::cout << "\n";
 
     Event<d> event(coords);
-    std::cout << "Is inside " << sprinkleRegion->isInside(event) << "\n";
     return sprinkleRegion->isInside(event) ? std::optional(event) : std::nullopt;
 };
 
@@ -142,7 +131,6 @@ std::optional<Event<2>> doSprinkleEvent(
     de_sitter_spacetime)
 {
     const auto randomNums = SprinkleUtils::generateRandomNumbers<2>();
-    std::cout << "Coordinates:\n";
     std::array<long double, 2> coords;
     coords[1] = SprinkleUtils::linearInterpolate(
         randomNums[1],
