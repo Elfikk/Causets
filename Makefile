@@ -13,7 +13,7 @@ INCLUDE_BUILD_OBJS = $(patsubst %, $(MAKEDIR)/$(BUILDDIR)/%,$(patsubst $(MAKEDIR
 export MAKEDIR = $(PWD)
 export BUILDDIR = build
 
-export CXXFLAGS = -I$(MAKEDIR) $(INCLUDE_DIR_FLAG) -L$(MAKEDIR)/$(BUILDDIR) $(LINKER_DIR_FLAG) -Wall -g
+export CXXFLAGS = -I$(MAKEDIR) $(INCLUDE_DIR_FLAG) -L$(MAKEDIR)/$(BUILDDIR) $(LINKER_DIR_FLAG) -Wall -Werror -g
 
 TARGET = main
 
