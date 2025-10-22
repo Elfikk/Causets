@@ -29,7 +29,7 @@ private:
     Sprinkler<d> sprinkler;
 
     std::map<std::size_t, std::vector<long double>> orderingFractionSamples = {};
-    std::map<std::size_t, std::vector<long double>> pathLengthSamples = {};
+    std::map<std::size_t, std::vector<std::size_t>> pathLengthSamples = {};
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ void StatsGatherer<d>::takeSample(const std::size_t N)
     orderingFractionSamples[N].push_back(relations / (N * N));
 
     auto longestPath = dag.findLongestPath();
-    pathLengthSamples[N].push_back((long double)longestPath.size());
+    pathLengthSamples[N].push_back(longestPath.size());
 }
 
 //---------------------------------------------------------------------------------------------------------------------
