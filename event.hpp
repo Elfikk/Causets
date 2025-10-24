@@ -18,6 +18,9 @@ public:
 
     Event<d> operator-(const Event<d> & rhs);
 
+    bool operator==(const Event<d> & other);
+    bool operator!=(const Event<d> & other) { return !(*this == other); }
+
 private:
     std::array<long double, d> coordinates;
 };
@@ -33,4 +36,19 @@ Event<d> Event<d>::operator-(const Event<d> & rhs)
         lhs.coordinates[i] = this->coordinates[i] - rhs.coordinates[i];
     }
     return lhs;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+bool Event<d>::operator==(const Event<d> & other)
+{
+    for (int i = 0; i < d; i++)
+    {
+        if (coordinates[i] != other[i])
+        {
+            return false;
+        }
+    }
+    return true;
 }
