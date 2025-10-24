@@ -21,6 +21,7 @@ public:
 
     std::size_t getNumNodes() const { return nodes.size(); }
     std::size_t getNumEdges() const { return edgeNum; }
+    std::size_t getNodeNumEdges(const nodeId node) const { return adjacencyList.at(node).size(); }
 
     std::map<nodeId, std::set<nodeId>> getAdjacencyList() const { return adjacencyList; }
 
