@@ -85,6 +85,8 @@ private:
     // Is there a different way to make the variant not complain about not being initialised?
     std::variant<AdS<d>, DeSitter<d>, Minkowski<d>> spacetime = Minkowski<d>();
 
+    void spacetimeReset(ActiveSpacetime);
+
     enum class ActiveRegion
     {
         Causal,
@@ -115,12 +117,20 @@ private:
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
+void SprinklerBuilder<d>::spacetimeReset(ActiveSpacetime spacetimeType)
+{
+    currentSpacetime = spacetimeType;
+    currentRegion = ActiveRegion::None;
+    currentEncloser = ActiveEncloser::None;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
 void SprinklerBuilder<d>::buildMinkowski()
 {
     spacetime = Minkowski<d>();
-    currentSpacetime = ActiveSpacetime::Minkowski;
-    currentRegion = ActiveRegion::None;
-    currentEncloser = ActiveEncloser::None;
+    spacetimeReset(ActiveSpacetime::Minkowski);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -129,9 +139,7 @@ template<int d>
 void SprinklerBuilder<d>::buildAds(long double R0)
 {
     spacetime = AdS<d>(R0);
-    currentSpacetime = ActiveSpacetime::AdS;
-    currentRegion = ActiveRegion::None;
-    currentEncloser = ActiveEncloser::None;
+    spacetimeReset(ActiveSpacetime::AdS);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -140,9 +148,7 @@ template<int d>
 void SprinklerBuilder<d>::buildDeSitter(std::array<long double, 2 * d> boundaries)
 {
     spacetime = DeSitter<d>(boundaries);
-    currentSpacetime = ActiveSpacetime::DeSitter;
-    currentRegion = ActiveRegion::None;
-    currentEncloser = ActiveEncloser::None;
+    spacetimeReset(ActiveSpacetime::DeSitter);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
