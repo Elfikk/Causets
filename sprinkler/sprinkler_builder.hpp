@@ -19,6 +19,7 @@
 #include <functional>
 #include <optional>
 #include <memory>
+#include <unordered_set>
 #include <variant>
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -104,6 +105,7 @@ private:
         RectangularRegion<d>,
         SphericalRegion<d>
     > region = RectangularRegion<d>({});
+    std::vector<Event<d>> specialPoints = {};
 
     enum class ActiveEncloser
     {
@@ -122,6 +124,7 @@ void SprinklerBuilder<d>::spacetimeReset(ActiveSpacetime spacetimeType)
     currentSpacetime = spacetimeType;
     currentRegion = ActiveRegion::None;
     currentEncloser = ActiveEncloser::None;
+    specialPoints = {};
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -180,6 +183,8 @@ void SprinklerBuilder<d>::buildCausalRegion(const Event<d> & bottom, const Event
         }
     }
     region = CausalRegion<d>(causalFunc);
+    specialPoints.emplace_back(bottom);
+    specialPoints.emplace_back(top);
     currentRegion = ActiveRegion::Causal;
     currentEncloser = ActiveEncloser::None;
 }

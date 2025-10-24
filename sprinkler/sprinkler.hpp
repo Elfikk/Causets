@@ -25,11 +25,13 @@ class Sprinkler
 public:
     Sprinkler(
         std::function<std::optional<Event<d>>()> sprinkleFunc,
-        std::function<CausalRelation(const Event<d> &, const Event<d> &)> relationFunc
+        std::function<CausalRelation(const Event<d> &, const Event<d> &)> relationFunc,
+        std::vector<Event<d>> specialPoints = {}
     )
     :
     sprinkleFunction(sprinkleFunc),
-    relationFunction(relationFunc)
+    relationFunction(relationFunc),
+    specialPathPoints(specialPoints)
     {};
 
     Sprinkle<d> sprinkle(int points);
@@ -37,6 +39,7 @@ public:
 private:
     std::function<std::optional<Event<d>>()> sprinkleFunction;
     std::function<CausalRelation(const Event<d> &, const Event<d> &)> relationFunction;
+    std::vector<Event<d>> specialPathPoints;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -44,7 +47,7 @@ private:
 template<int d>
 Sprinkle<d> Sprinkler<d>::sprinkle(const int points)
 {
-    Sprinkle<d> sprinkle(relationFunction);
+    Sprinkle<d> sprinkle(relationFunction, specialPathPoints);
     int generatedPoints = 0;
 
     while (generatedPoints < points)

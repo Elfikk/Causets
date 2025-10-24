@@ -72,9 +72,14 @@ template<int d>
 void StatsGatherer<d>::takeSample(const std::size_t N)
 {
     auto sprinkle = sprinkler.sprinkle(N);
-    auto dag = sprinkle.generateCausalSet();
+    auto dag = sprinkle.generateSpecialPointCausalSet();
 
     long double relations = dag.getNumEdges();
+    for (const auto id : sprinkle.getSpecialPointIds())
+    {
+        relations -= dag.getNodeNumEdges(id);
+    }
+
     orderingFractionSamples[N].push_back(relations / (N * N));
 
     auto longestPath = dag.findLongestPath();
