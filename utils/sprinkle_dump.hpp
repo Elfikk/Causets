@@ -40,4 +40,20 @@ void dumpSprinkleCsv(Sprinkle<d> & sprinkle, const std::string filename)
     dumpFile.close();
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
+// Dump Longest Path Points to CSV
+template<int d>
+void dumpDagLongestPathPointsToCsv(Sprinkle<d> & sprinkle, const std::vector<unsigned int> & path, const std::string filename)
+{
+    auto events = sprinkle.getEvents();
+    std::ofstream dumpFile(filename);
+    for (const auto & id : path)
+    {
+        dumpEventCsv(dumpFile, events[id]);
+        dumpFile << '\n';
+    }
+    dumpFile.close();
+}
+
 }
