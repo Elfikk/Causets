@@ -102,7 +102,7 @@ void StatsGatherer<d>::takeSamples(
         std::cout << "Sampling at " << N << "\n";
         for (std::size_t repeat = 0; repeat < repeats; repeat++)
         {
-            std::cout << "Taking sample " << repeat << " out of " << repeats <<"\n";
+            std::cout << "Taking sample " << repeat + 1 << " out of " << repeats <<"\n";
             takeSample(N);
         }
     }
