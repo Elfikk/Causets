@@ -12,8 +12,8 @@ class RectangularRegion : public Region<d>
 public:
     RectangularRegion(std::array<long double, 2*d> inputBounds) : bounds(inputBounds) {}
     bool isInside(const Event<d> &) const override;
-    long double getLowerBound(int coordinate) { return bounds[2 * coordinate]; };
-    long double getUpperBound(int coordinate) { return bounds[2 * coordinate + 1]; };
+    long double getLowerBound(int coordinate) const { return bounds[2 * coordinate]; };
+    long double getUpperBound(int coordinate) const { return bounds[2 * coordinate + 1]; };
 
 private:
     std::array<long double, 2*d> bounds;

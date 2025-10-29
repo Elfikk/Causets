@@ -10,9 +10,9 @@ class Event
 public:
     Event(std::array<long double, d> coords) : coordinates(coords) {};
 
-    long double time() { return coordinates[0]; }
+    long double time() const { return coordinates[0]; }
     // i >= 0
-    long double spaceComp(int i) { return coordinates[i - 1]; }
+    long double spaceComp(int i) const { return coordinates[i - 1]; }
 
     long double operator[](int i) const { return coordinates[i]; }
 
