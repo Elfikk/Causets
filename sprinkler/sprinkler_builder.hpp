@@ -33,7 +33,6 @@ public:
     void buildMinkowski();
     void buildAds(long double R0);
     void buildDeSitter(std::array<long double, 2 * d> boundaries);
-    // void buildKoluzaKlein(std::array<long double, 2*d> bounds);
 
     void buildCausalRegion(const Event<d> &, const Event<d> &);
     void buildCylinderRegion(
@@ -53,6 +52,7 @@ public:
         std::array<long double, 2> extension,
         int extension_axis
     );
+    void buildPeriodicRectangularRegion(std::array<long double, 2*d> inputBounds);
     void buildRectangularRegion(std::array<long double, 2*d> inputBounds);
     void buildSphericalRegion(const Event<d> & sphereCentre, long double R);
 
@@ -66,6 +66,7 @@ private:
         std::function<std::optional<Event<d>>(Region<d> *,RectangularRegion<d> &)>
     );
     std::function<CausalRelation(const Event<d> &, const Event<d> &)> selectCausalFunction();
+    std::function<CausalRelation(const Event<d> &, const Event<d> &)> selectDefaultCausalFunction();
 
     template<typename RegionT>
     std::function<std::optional<Event<d>>()> buildSprinkleFunction(
@@ -93,6 +94,7 @@ private:
         Causal,
         Cylindrical,
         ExtendedCausal,
+        PeriodicRectangular,
         Rectangular,
         Spherical,
         None
@@ -102,6 +104,7 @@ private:
         CausalRegion<d>,
         CylindricalRegion<d>,
         ExtendedCausalRegion<d>,
+        PeriodicRectangular<d>,
         RectangularRegion<d>,
         SphericalRegion<d>
     > region = RectangularRegion<d>({});
@@ -288,6 +291,19 @@ void SprinklerBuilder<d>::buildCylinderRegion(
 
 //---------------------------------------------------------------------------------------------------------------------
 
+template<int d>
+void SprinklerBuilder<d>::buildPeriodicRectangularRegion(std::array<long double, 2*d> inputBounds)
+{
+    if (currentSpacetime == ActiveSpacetime::None)
+    {
+        std::__throw_runtime_error("Need a spacetime to build a region.");
+    }
+    currentRegion = ActiveRegion::PeriodicRectangular;
+    currentEncloser = ActiveEncloser::None;
+    region = PeriodicRectangular<d>(inputBounds);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
 void SprinklerBuilder<d>::buildRectangularRegion(std::array<long double, 2*d> inputBounds)
@@ -391,6 +407,10 @@ std::function<std::optional<Event<d>>()> SprinklerBuilder<d>::selectSprinklerSpr
         {
             return buildSprinkleFunction<ExtendedCausalRegion<d>>(fullSprinkleFunc);
         }
+        case ActiveRegion::PeriodicRectangular:
+        {
+            return buildSprinkleFunction<PeriodicRectangular<d>>(fullSprinkleFunc);
+        }
         case ActiveRegion::Rectangular:
         {
             return buildSprinkleFunction<RectangularRegion<d>>(fullSprinkleFunc);
@@ -411,6 +431,29 @@ std::function<std::optional<Event<d>>()> SprinklerBuilder<d>::selectSprinklerSpr
 
 template<int d>
 std::function<CausalRelation(const Event<d> &, const Event<d> &)> SprinklerBuilder<d>::selectCausalFunction()
+{
+    switch (currentRegion)
+    {
+        case ActiveRegion::PeriodicRectangular:
+        {
+            const auto periodicRegion = std::get<PeriodicRectangular<d>>(region);
+            return CausalUtils::periodicRectangularRelations(periodicRegion);
+        }
+        case ActiveRegion::None:
+        {
+            std::__throw_runtime_error("Uninitialised spacetime whilst selecting causal function.");
+        }
+        default:
+        {
+            return selectDefaultCausalFunction();
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+template<int d>
+std::function<CausalRelation(const Event<d> &, const Event<d> &)> SprinklerBuilder<d>::selectDefaultCausalFunction()
 {
     switch (currentSpacetime)
     {
