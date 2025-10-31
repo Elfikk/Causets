@@ -122,40 +122,56 @@ std::optional<Event<d>> adsEventSprinkle(
 {
     return doSprinkleEvent(sprinkleRegion, enclosingRegion, ads_spacetime());
 }
+//---------------------------------------------------------------------------------------------------------------------
+
+long double deSitterTimeFromRandom(long double r, long double z0, long double z1, long double zInf, long double d)
+{
+    const auto prePowerDenominator = r * pow(zInf - z0, d-1) + (1 - r) * pow((zInf - z1), d-1);
+    const auto numerator = (zInf - z1) * (zInf - z0);
+    return zInf - numerator / pow(prePowerDenominator, 1.0 / (d - 1));
+}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-std::optional<Event<2>> doSprinkleEvent(
-    Region<2> * sprinkleRegion,
-    RectangularRegion<2> & enclosingRegion,
+template<int d>
+std::optional<Event<d>> doSprinkleEvent(
+    Region<d> * sprinkleRegion,
+    RectangularRegion<d> & enclosingRegion,
     de_sitter_spacetime)
 {
     const auto randomNums = SprinkleUtils::generateRandomNumbers<2>();
-    std::array<long double, 2> coords;
-    coords[1] = SprinkleUtils::linearInterpolate(
-        randomNums[1],
-        enclosingRegion.getLowerBound(1),
-        enclosingRegion.getUpperBound(1)
-    );
-    coords[0] = atan((2 * randomNums[0] - 1) * tan(enclosingRegion.getUpperBound(0)));
-    Event<2> event(coords);
+    std::array<long double, d> coords;
+        for (int i = 0; i < d; i++)
+    {
+        if (i != 0)
+        {
+            coords[i] = SprinkleUtils::linearInterpolate(
+                randomNums[i],
+                enclosingRegion.getLowerBound(i),
+                enclosingRegion.getUpperBound(i)
+            );
+        }
+        else
+        {
+            coords[i] = deSitterTimeFromRandom(
+                randomNums[0],
+                enclosingRegion.getLowerBound(i),
+                enclosingRegion.getUpperBound(i),
+                1.0,
+                d
+            );
+        }
+    }
+    Event<d> event(coords);
     return sprinkleRegion->isInside(event) ? std::optional(event) : std::nullopt;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 template<int d>
-std::optional<Event<d>> deSitterEventSprinkle(Region<d> *, RectangularRegion<d> &)
-{
-    return std::nullopt;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-template<>
-std::optional<Event<2>> deSitterEventSprinkle(
-    Region<2> * sprinkleRegion,
-    RectangularRegion<2> & enclosingRegion
+std::optional<Event<d>> deSitterEventSprinkle(
+    Region<d> * sprinkleRegion,
+    RectangularRegion<d> & enclosingRegion
 )
 {
     return doSprinkleEvent(sprinkleRegion, enclosingRegion, de_sitter_spacetime());

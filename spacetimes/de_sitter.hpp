@@ -16,13 +16,16 @@ class DeSitter: public Spacetime<d>
 public:
     typedef de_sitter_spacetime spacetime_class;
 
-    DeSitter(std::array<long double, 2 * d> boundaries) : bounds(boundaries) {}
-    CausalRelation causalRelation(const Event<d> & a, const Event<d> & b) const override { return CausalRelation::Spacelike; };
+    DeSitter(std::array<long double, 2 * d> boundaries, long double _maxZeta = 1)
+    : bounds(boundaries), maxZeta(_maxZeta) {}
+
+    CausalRelation causalRelation(const Event<d> & a, const Event<d> & b) const override;
     long double getLowerBound(int i) const override { return bounds[2 * i]; }
     long double getUpperBound(int i) const override { return bounds[2 * i + 1]; }
 
 private:
     std::array<long double, 2 * d> bounds;
+    long double maxZeta;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -35,16 +38,20 @@ struct spacetime_traits<DeSitter<d>>
 
 //---------------------------------------------------------------------------------------------------------------------
 
-template<>
-CausalRelation DeSitter<2>::causalRelation(const Event<2> & a, const Event<2> & b) const
+template<int d>
+CausalRelation DeSitter<d>::causalRelation(const Event<d> & a, const Event<d> & b) const
 {
-    // Must Be Using Conformal Coordinates
-    const auto separation = (b[1] - a[1]) * (b[1] - a[1]) - (b[0] - a[0]) * (b[0] - a[0]);
-    if (separation > 0)
+    auto interval = - (b[0] - a[0]) * (b[0] - a[0]);
+    for (int i = 1; i < d; i++)
+    {
+        interval += (b[i] - a[i]) * (b[i] - a[i]);
+    }
+
+    if (interval > 0)
     {
         return CausalRelation::Spacelike;
     }
-    else if (separation == 0)
+    else if (interval == 0)
     {
         return CausalRelation::TimeLike;
     }
