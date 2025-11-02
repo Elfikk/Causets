@@ -139,9 +139,9 @@ std::optional<Event<d>> doSprinkleEvent(
     RectangularRegion<d> & enclosingRegion,
     de_sitter_spacetime)
 {
-    const auto randomNums = SprinkleUtils::generateRandomNumbers<2>();
+    const auto randomNums = SprinkleUtils::generateRandomNumbers<d>();
     std::array<long double, d> coords;
-        for (int i = 0; i < d; i++)
+    for (int i = 0; i < d; i++)
     {
         if (i != 0)
         {
