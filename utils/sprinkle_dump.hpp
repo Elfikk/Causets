@@ -17,10 +17,11 @@ namespace CausalUtils
 template<int d>
 void dumpEventCsv(std::ofstream & stream, const Event<d> & event)
 {
-    for (unsigned int i = 0; i < d; i++)
+    stream << event[0];
+    for (unsigned int i = 1; i < d; i++)
     {
-        auto component = event[i];
-        stream << component << ",";
+        stream << ",";
+        stream << event[i];
     }
 }
 
